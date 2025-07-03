@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SwadLink KOT Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .kot-scroll-area {
+      max-height: calc(100vh - 140px); /* avoid scroll on page */
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans relative">
+    
+<!-- Navbar -->
+<nav class="bg-green-50 shadow-md px-4 py-3 flex justify-between items-center border-b border-green-200">
+  <div>
+    <h1 class="text-xl sm:text-2xl font-bold text-[var(--green-main)]">Deva’s Cafe</h1>
+    <p class="text-xs text-gray-600">Powered by <span class="font-semibold text-green-700">SwadLink</span></p>
+  </div>
+  
+  <div class="flex items-center gap-3">
+
+    <a href="/logout" class="text-sm text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md">
+      Exit KOT
+    </a>
+  </div>
+</nav>
+
+
+
+  <!-- Exit KOT Button
+  <div class="fixed right-4 top-4 z-50">
+    <a href="/dashboard" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium shadow">
+      Exit KOT
+    </a>
+  </div> -->
+
+  <!-- Notification (appears when new order is added) -->
+  <div id="notification" class="hidden fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-green-600 text-white px-4 py-2 rounded shadow-lg animate-bounce">
+    🆕 New Order Received!
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-4xl mx-auto py-6 px-4">
+
+    <!-- Title -->
+    <h1 class="text-2xl sm:text-3xl font-bold mb-4 text-center">🧾 Live KOT Orders</h1>
+
+    <!-- Scrollable Order List -->
+    <div class="kot-scroll-area space-y-4">
+      
+      <!-- Order Card -->
+      <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-green-600">
+        <div class="flex justify-between items-start">
+          <div>
+            <h2 class="text-lg font-bold text-gray-800">Order #123 - Ramesh Patil</h2>
+            <p class="text-xs text-gray-500">2025-07-03 13:40</p>
+          </div>
+          <button class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 rounded-md">
+            Mark as Served
+          </button>
+        </div>
+        <ul class="mt-2 space-y-1 text-sm">
+          <li>• Paneer Tikka x2</li>
+          <li>• Masala Chai x1</li>
+          <li>• Butter Naan x3</li>
+        </ul>
+        <p class="mt-2 font-semibold text-green-700">Total: ₹480</p>
+      </div>
+
+      <!-- Simulated Shorter Card -->
+      <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-green-600">
+        <div class="flex justify-between items-start">
+          <div>
+            <h2 class="text-lg font-bold text-gray-800">Order #124 - Neha Joshi</h2>
+            <p class="text-xs text-gray-500">2025-07-03 13:45</p>
+          </div>
+          <button class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 rounded-md">
+            Mark as Served
+          </button>
+        </div>
+        <ul class="mt-2 space-y-1 text-sm">
+          <li>• Coffee x1</li>
+        </ul>
+        <p class="mt-2 font-semibold text-green-700">Total: ₹120</p>
+      </div>
+
+      <!-- Add more order cards here -->
+
+    </div>
+  </div>
+
+  <!-- Simulate new order notification (you can replace with WebSocket trigger) -->
+  <script>
+    setTimeout(() => {
+      const notification = document.getElementById("notification");
+      notification.classList.remove("hidden");
+      setTimeout(() => {
+        notification.classList.add("hidden");
+      }, 3000);
+    }, 4000); // Simulates new order in 4 seconds
+  </script>
+
+</body>
+</html>

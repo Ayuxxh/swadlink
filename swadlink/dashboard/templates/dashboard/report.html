@@ -1,0 +1,106 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Reports - Swadlink{% endblock %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="px-4 mt-6 mb-4 text-center">
+  <h2 class="text-2xl font-bold text-green-800">Sales Reports</h2>
+  <p class="text-sm text-gray-600 mt-1">View daily, weekly, monthly or custom reports</p>
+</div>
+
+<!-- Filter Section (Centered) -->
+<div class="px-4 flex justify-center mb-6">
+  <div class="w-full md:w-2/4">
+    
+    <!-- Time Range Buttons -->
+    <div class="flex flex-wrap justify-center gap-2 mb-4">
+      <button class="report-btn px-4 py-2 rounded-xl font-semibold border border-[var(--gray-border)] bg-[var(--green-filter)]" onclick="setActiveReport(this, 'daily')">Daily</button>
+      <button class="report-btn px-4 py-2 rounded-xl font-semibold border border-[var(--gray-border)] bg-white" onclick="setActiveReport(this, 'weekly')">Weekly</button>
+      <button class="report-btn px-4 py-2 rounded-xl font-semibold border border-[var(--gray-border)] bg-white" onclick="setActiveReport(this, 'monthly')">Monthly</button>
+      <button class="report-btn px-4 py-2 rounded-xl font-semibold border border-[var(--gray-border)] bg-white" onclick="setActiveReport(this, 'custom')">Custom Range</button>
+    </div>
+
+    <!-- Report Type Dropdown -->
+    <div class="mb-2">
+      <label class="block font-semibold text-gray-700 mb-1">Select report type:</label>
+      <select class="w-full px-4 py-2 border border-[var(--gray-border)] rounded-lg">
+        <option>Sales Report</option>
+        <option>Orders Report</option>
+        <option>Profit Report</option>
+        <option>Cancelled Orders</option>
+        <option>Top Items</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Range Card -->
+<div id="customRangeCard" class="hidden px-4 mb-6 flex justify-center">
+  <div class="w-full md:w-2/4 bg-white p-4 rounded-lg shadow border border-[var(--gray-border)]">
+    <h3 class="font-semibold text-lg mb-3 text-center text-green-700">Select Custom Date Range</h3>
+    <div class="flex flex-col md:flex-row gap-4">
+      <div class="flex flex-col w-full">
+        <label class="font-semibold text-gray-700 mb-1">From:</label>
+        <input type="date" class="px-4 py-2 border border-[var(--gray-border)] rounded-lg" />
+      </div>
+      <div class="flex flex-col w-full">
+        <label class="font-semibold text-gray-700 mb-1">To:</label>
+        <input type="date" class="px-4 py-2 border border-[var(--gray-border)] rounded-lg" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sample Report Table -->
+<div class="px-4 mb-10">
+  <div class="bg-white p-4 rounded-lg shadow border border-[var(--gray-border)] overflow-x-auto">
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="font-semibold text-lg">Report Table</h3>
+      <button class="px-4 py-2 text-sm bg-[var(--green-main)] text-white rounded-md hover:bg-green-800">Download CSV</button>
+    </div>
+    <table class="min-w-full text-sm text-left">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">Date</th>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">Orders</th>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">Revenue</th>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">Profit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="hover:bg-gray-50">
+          <td class="px-3 py-2 border border-[var(--gray-border)]">01 Jul 2025</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">25</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">₹3,200</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">₹1,200</td>
+        </tr>
+        <tr class="hover:bg-gray-50">
+          <td class="px-3 py-2 border border-[var(--gray-border)]">30 Jun 2025</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">43</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">₹4,500</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">₹2,000</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- JS for Time Filter Toggle -->
+<script>
+  function setActiveReport(button, type) {
+    document.querySelectorAll('.report-btn').forEach(btn => {
+      btn.classList.remove('bg-[var(--green-filter)]');
+      btn.classList.add('bg-white');
+    });
+    button.classList.add('bg-[var(--green-filter)]');
+
+    const rangeCard = document.getElementById('customRangeCard');
+    if (type === 'custom') {
+      rangeCard.classList.remove('hidden');
+    } else {
+      rangeCard.classList.add('hidden');
+    }
+  }
+</script>
+
+{% endblock %}

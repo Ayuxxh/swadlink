@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}{{ cafe.name }} | Dashboard{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --green-main: #2e7b55;
+      --green-light: #c2f5c8;
+      --green-filter: #b2e7bd;
+      --gray-border: #4b4b4b33;
+      --card-shadow: rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body class="bg-[var(--green-light)] min-h-screen text-black font-sans">
+  <!-- Header -->
+  <header class="bg-[var(--green-main)] text-white px-4 py-4 flex flex-wrap items-center justify-between border-b border-[var(--gray-border)]">
+    <div class="flex justify-between items-center w-full md:w-auto">
+      <div class="text-3xl font-bold text-center md:text-left">
+        {{ cafe.name }} 
+        <span class="text-green-300 text-base block">Powered by Swadlink</span>
+      </div>
+      <button id="menu-toggle" class="md:hidden block text-white text-2xl ml-auto">☰</button>
+    </div>
+    <nav id="nav-links" class="w-full md:w-auto md:flex hidden md:items-center md:gap-6 mt-2 md:mt-0">
+      <a href="{% url 'dashboard:dashboard' slug=cafe.slug %}" class="block px-2 py-1 font-semibold">Dashboard</a>
+      <a href="{% url 'dashboard:view_order' slug=cafe.slug %}" class="block px-2 py-1 font-semibold">Orders</a>
+      <a href="{% url 'dashboard:menu_upload' slug=cafe.slug %}" class="block px-2 py-1 font-semibold">Menu</a>
+      <a href="{% url 'dashboard:reports' slug=cafe.slug %}" class="block px-2 py-1 font-semibold">Reports</a>
+      <a href="#" class="block px-2 py-1 font-semibold">Employee area</a>
+      <a href="{% url 'accounts:logout' slug=cafe.slug %}" class="block px-2 py-1 font-semibold">Logout</a>
+    </nav>
+  </header>
+
+  
+{% if messages %}
+  <div id="messages">
+    {% for message in messages %}
+      <div class="w-full relative py-4 px-6 text-white text-center font-medium
+                  {% if message.tags == 'success' %}
+                    bg-green-600
+                  {% elif message.tags == 'error' %}
+                    bg-red-600
+                  {% elif message.tags == 'warning' %}
+                    bg-yellow-400 text-black
+                  {% else %}
+                    bg-gray-700
+                  {% endif %}
+                  ">
+        {{ message }}
+        <!-- Close Button -->
+        <button onclick="this.parentElement.remove()" 
+                class="absolute right-4 top-3 text-xl font-bold text-white hover:text-gray-200">
+          &times;
+        </button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+
+  <!-- Main Content -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
+
+
+<script>
+  document.getElementById('menu-toggle').addEventListener('click', function () {
+    const navLinks = document.getElementById('nav-links');
+    navLinks.classList.toggle('hidden');
+    navLinks.classList.toggle('flex');
+  });
+</script>

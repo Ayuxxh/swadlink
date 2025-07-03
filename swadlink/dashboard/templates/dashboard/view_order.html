@@ -1,0 +1,56 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Orders - Swadlink{% endblock %}
+{% block content %}
+
+<!-- Orders Page Header -->
+<div class="px-4 mt-6 mb-4 flex justify-between items-center">
+  <h2 class="text-2xl font-bold text-green-800">Recent Orders (Last 30 Days)</h2>
+</div>
+
+<!-- Orders Table -->
+<div class="px-4 mb-6">
+  <div class="bg-white p-4 rounded-lg shadow-[0_1px_4px_var(--card-shadow)] border border-[var(--gray-border)] overflow-x-auto">
+    <table class="min-w-full text-sm text-left">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">#</th>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">Items</th>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">Table</th>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">Value</th>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">Status</th>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Sample 5 orders; Replace with loop later -->
+
+        <tr class="hover:bg-gray-50">
+          <td class="px-3 py-2 border border-[var(--gray-border)]">#</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">Cheese Pizza, Coke</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">T</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">₹222</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">
+            <span class="inline-block px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Completed</span>
+          </td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">14/06/2025 </td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Pagination -->
+<div class="px-4 mb-10 flex justify-center">
+  <nav class="inline-flex items-center space-x-1 rounded-md border border-[var(--gray-border)] bg-white p-2 shadow-sm">
+    <a href="#" class="px-3 py-1 rounded-md hover:bg-[var(--green-light)] text-sm font-medium">&laquo;</a>
+    <a href="#" class="px-3 py-1 rounded-md bg-[var(--green-filter)] font-semibold text-sm">1</a>
+    <a href="#" class="px-3 py-1 rounded-md hover:bg-[var(--green-light)] text-sm">2</a>
+    <a href="#" class="px-3 py-1 rounded-md hover:bg-[var(--green-light)] text-sm">3</a>
+    <span class="px-3 py-1 text-sm text-gray-500">...</span>
+    <a href="#" class="px-3 py-1 rounded-md hover:bg-[var(--green-light)] text-sm">10</a>
+    <a href="#" class="px-3 py-1 rounded-md hover:bg-[var(--green-light)] text-sm">&raquo;</a>
+  </nav>
+</div>
+
+{% endblock %}

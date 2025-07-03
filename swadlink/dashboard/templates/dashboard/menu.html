@@ -1,0 +1,80 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{{ cafe.name }} | Menu{% endblock %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="px-6 mt-6 mb-4 text-center">
+  <h2 class="text-2xl font-bold text-green-800">Manage Menu</h2>
+  <p class="text-sm text-gray-600 mt-1">Upload items using CSV or visit your public menu page.</p>
+</div>
+
+<!-- Upload + Actions -->
+<div class="px-6 flex justify-center mb-6">
+  <div class="w-full md:w-2/4 bg-white p-6 rounded-lg shadow border border-[var(--gray-border)] text-center">
+    
+    <!-- CSV Upload Form -->
+
+    <form method="POST" enctype="multipart/form-data" class="mb-6">
+     {% csrf_token %} 
+     
+        <label class="block text-left font-semibold mb-2">Upload Menu CSV:</label>
+      <input type="file" name="csv_file" accept=".csv"
+             class="w-full px-4 py-2 border border-[var(--gray-border)] rounded-md mb-4 bg-gray-50" required />
+      <button type="submit"
+              class="px-6 py-2 bg-[var(--green-main)] text-white font-semibold rounded-md hover:bg-green-800 transition">
+        Upload
+      </button>
+    </form>
+
+    <!-- Buttons: Visit Public Menu + Download -->
+    <div class="flex flex-col md:flex-row justify-between gap-4">
+      <a href="/menu/" target="_blank"
+         class="w-full md:w-1/2 px-4 py-2 bg-[var(--green-filter)] text-green-900 font-semibold text-center rounded-md hover:bg-green-200">
+        Visit Public Menu
+      </a>
+      <a href="?download=1"  
+         class="w-full md:w-1/2 px-4 py-2 bg-gray-200 text-gray-800 font-semibold text-center rounded-md hover:bg-gray-300">
+        Download Current Menu 
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<!-- Current Menu Table -->
+<div class="px-6 mb-10">
+  <div class="bg-white p-4 rounded-lg shadow border border-[var(--gray-border)] overflow-x-auto">
+    <h3 class="text-lg font-semibold mb-4 text-center">Current Menu</h3>
+    <table class="min-w-full text-sm text-left">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">#</th>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">Name</th>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">Price</th>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">Cost</th>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">Category</th>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">Description</th>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in menu_items %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-3 py-2 border border-[var(--gray-border)]">{{ forloop.counter }}</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">{{ item.name }}</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">{{ item.price }}</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">{{ item.cost }}</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">{{ item.category }}</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">{{ item.description }}</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">
+             {% if item.is_veg %}
+            <span class="inline-block px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Veg</span>
+            {% else %}
+            <span class="inline-block px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">Non-Veg</span>
+            {% endif %}
+        
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deva's Cafe Menu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-green-100 to-green-200 text-gray-800 relative pb-24">
+
+  <!-- Header -->
+  <div class="bg-green-800 text-white text-center py-5 px-4 shadow-md">
+    <h1 class="text-4xl font-extrabold tracking-wide leading-tight">Deva’s Cafe</h1>
+    <p class="text-sm text-green-300 italic">Powered by SwadLink</p>
+  </div>
+
+  <!-- Menu Content -->
+  <div class="p-4 space-y-6">
+
+    <!-- Category: Soups -->
+    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Soups</h2>
+
+      <!-- Item -->
+      <div class="flex justify-between items-start p-2">
+        <div>
+          <p class="font-semibold">Tomato Soup</p>
+          <p class="text-sm text-gray-600">A mixed blend of spices served hot</p>
+        </div>
+        <p class="text-sm font-semibold bg-green-100 text-green-800 px-2 py-1 rounded-full">₹120</p>
+      </div>
+
+      <!-- Divider -->
+      <div class="border-t border-gray-200 my-2"></div>
+
+      <!-- Item -->
+      <div class="flex justify-between items-start p-2">
+        <div>
+          <p class="font-semibold">Manchow Soup</p>
+          <p class="text-sm text-gray-600">Spicy and tangy Indo-Chinese soup</p>
+        </div>
+        <p class="text-sm font-semibold bg-green-100 text-green-800 px-2 py-1 rounded-full">₹130</p>
+      </div>
+    </div>
+
+    <!-- Category: Pastas -->
+    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Pastas</h2>
+
+      <!-- Item -->
+      <div class="flex justify-between items-start p-2">
+        <div>
+          <p class="font-semibold">Tomato Pasta</p>
+          <p class="text-sm text-gray-600">Tossed in rich tangy tomato sauce</p>
+        </div>
+        <p class="text-sm font-semibold bg-green-100 text-green-800 px-2 py-1 rounded-full">₹180</p>
+      </div>
+
+      <!-- Divider -->
+      <div class="border-t border-gray-200 my-2"></div>
+
+      <!-- Item -->
+      <div class="flex justify-between items-start p-2">
+        <div>
+          <p class="font-semibold">White Sauce Pasta</p>
+          <p class="text-sm text-gray-600">Creamy blend with cheese & herbs</p>
+        </div>
+        <p class="text-sm font-semibold bg-green-100 text-green-800 px-2 py-1 rounded-full">₹200</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Sticky View Cart Button -->
+  <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+    <button class="bg-green-700 hover:bg-green-800 text-white px-6 py-3 rounded-full shadow-lg font-semibold tracking-wide">
+      🛒 View Cart
+    </button>
+  </div>
+
+</body>
+</html>

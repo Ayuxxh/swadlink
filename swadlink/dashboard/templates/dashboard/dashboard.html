@@ -1,0 +1,136 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Dashboard - Swadlink{% endblock %}
+{% block content %}
+
+<!-- Filter Buttons -->
+<div class="flex flex-wrap justify-center my-6 gap-2 px-4">
+  <button class="filter-btn px-4 py-2 rounded-xl font-semibold border border-[var(--gray-border)] bg-[var(--green-filter)] active" onclick="setActiveFilter(this)">Daily</button>
+  <button class="filter-btn px-4 py-2 rounded-xl font-semibold border border-[var(--gray-border)] bg-white" onclick="setActiveFilter(this)">Weekly</button>
+  <button class="filter-btn px-4 py-2 rounded-xl font-semibold border border-[var(--gray-border)] bg-white" onclick="setActiveFilter(this)">Monthly</button>
+  <button class="filter-btn px-4 py-2 rounded-xl font-semibold border border-[var(--gray-border)] bg-white" onclick="setActiveFilter(this)">Yearly</button>
+</div>
+
+<!-- JS for Filter Toggle -->
+<script>
+  function setActiveFilter(button) {
+    const buttons = document.querySelectorAll('.filter-btn');
+    buttons.forEach(btn => {
+      btn.classList.remove('bg-[var(--green-filter)]');
+      btn.classList.add('bg-white');
+    });
+
+    button.classList.remove('bg-white');
+    button.classList.add('bg-[var(--green-filter)]');
+  }
+</script>
+
+<!-- Welcome Message -->
+<div class="px-4 mb-6 flex justify-center">
+  <div class="w-full md:w-2/4 bg-white p-4 rounded-lg shadow-[0_1px_4px_var(--card-shadow)] border border-[var(--gray-border)] text-center">
+    <h2 class="text-2xl font-bold text-green-800">Welcome back, {{ owner }}! 👋</h2>
+    <p class="text-gray-600 mt-1">Here’s a summary of your cafe performance.</p>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 mb-6">
+  <div class="bg-white p-4 rounded-lg shadow-[0_1px_4px_var(--card-shadow)] border border-[var(--gray-border)] text-center">
+    <p class="font-semibold text-lg">Total revenue</p>
+    <p class="text-green-700 text-3xl font-bold">₹4300</p>
+  </div>
+  <div class="bg-white p-4 rounded-lg shadow-[0_1px_4px_var(--card-shadow)] border border-[var(--gray-border)] text-center">
+    <p class="font-semibold text-lg">Total Orders</p>
+    <p class="text-green-700 text-3xl font-bold">43</p>
+  </div>
+  <div class="bg-white p-4 rounded-lg shadow-[0_1px_4px_var(--card-shadow)] border border-[var(--gray-border)] text-center">
+    <p class="font-semibold text-lg">Avg. Order</p>
+    <p class="text-green-700 text-3xl font-bold">₹100</p>
+  </div>
+  <div class="bg-white p-4 rounded-lg shadow-[0_1px_4px_var(--card-shadow)] border border-[var(--gray-border)] text-center">
+    <p class="font-semibold text-lg">Estimated Profit</p>
+    <p class="text-green-700 text-3xl font-bold">₹2200</p>
+  </div>
+</div>
+
+
+<!-- Charts -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 mb-6">
+  <div class="bg-white p-4 rounded-lg shadow-[0_1px_4px_var(--card-shadow)] border border-[var(--gray-border)] text-center">
+    <h3 class="font-semibold text-lg mb-2">Sales over time</h3>
+    <div class="h-40 flex items-center justify-center text-gray-400 border border-[var(--gray-border)] rounded-md">Bar chart of orders vs time</div>
+  </div>
+  <div class="bg-white p-4 rounded-lg shadow-[0_1px_4px_var(--card-shadow)] border border-[var(--gray-border)] text-center">
+    <h3 class="font-semibold text-lg mb-2">Bestseller</h3>
+    <div class="h-40 flex items-center justify-center text-gray-400 border border-[var(--gray-border)] rounded-md">Bar chart of most items sold horizontal</div>
+  </div>
+</div>
+
+<!-- Recent Orders -->
+<div class="px-4 mb-10">
+  <div class="bg-white p-4 rounded-lg shadow-[0_1px_4px_var(--card-shadow)] border border-[var(--gray-border)]">
+    <h3 class="font-semibold text-lg mb-4 text-center">5 Recent Orders</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left border border-[var(--gray-border)]">
+        <thead class="bg-gray-100 text-gray-700">
+          <tr>
+            <th class="px-2 py-1 border border-[var(--gray-border)]">Order no.</th>
+            <th class="px-2 py-1 border border-[var(--gray-border)]">Items</th>
+            <th class="px-2 py-1 border border-[var(--gray-border)]">Table</th>
+            <th class="px-2 py-1 border border-[var(--gray-border)]">Order value</th>
+            <th class="px-2 py-1 border border-[var(--gray-border)]">Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">774</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]"><strong>Coffee</strong></td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">T1</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">₹80</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">2:00 14/06/2025</td>
+          </tr>
+          <tr>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">773</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]"><strong>Garlic Bread</strong>, cheese pizza x3</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">T2</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">₹400</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">2:10 14/06/2025</td>
+          </tr>
+          <tr>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">772</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">Pizza with breadsticks</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">T3</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">₹250</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">2:20 14/06/2025</td>
+          </tr>
+          <tr>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">771</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">Pasta</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">T4</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">₹180</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">2:30 14/06/2025</td>
+          </tr>
+          <tr>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">770</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">Coke</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">T5</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">₹50</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">2:40 14/06/2025</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Top Employee -->
+<div class="px-4 mb-6">
+  <div class="bg-white p-4 rounded-lg shadow-[0_1px_4px_var(--card-shadow)] border border-[var(--gray-border)] text-center">
+    <h3 class="font-semibold text-lg mb-2">Top Employee</h3>
+    <p class="text-sm text-gray-700">Most orders created by</p>
+    <p class="text-green-700 text-2xl font-bold mt-1">Ravi</p>
+    <p class="text-sm text-gray-600">15 Orders</p>
+  </div>
+</div>
+
+
+{% endblock %}
