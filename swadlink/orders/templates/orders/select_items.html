@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deva's Cafe Menu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-green-100 to-green-200 text-gray-800 relative pb-24">
+
+  <!-- Header -->
+  <div class="bg-green-800 text-white text-center py-5 px-4 shadow-md">
+    <h1 class="text-4xl font-extrabold tracking-wide leading-tight">Deva’s Cafe</h1>
+    <p class="text-sm text-green-300 italic">Powered by SwadLink</p>
+  </div>
+
+  <!-- Menu -->
+  <div class="p-4 space-y-6">
+
+    <!-- Category -->
+    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Soups</h2>
+
+      <!-- Item: Tomato Soup -->
+      <div class="flex flex-wrap justify-between items-center gap-4 p-2">
+        <div>
+          <p class="font-semibold">Tomato Soup</p>
+          <p class="text-sm text-gray-600">A mixed blend of spices served hot</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-semibold bg-green-100 text-green-800 px-2 py-1 rounded-full">₹120</span>
+          <button onclick="addToCart('tomatoSoup')" id="add-btn-tomatoSoup" class="text-white bg-green-700 hover:bg-green-800 px-4 py-1.5 rounded-lg text-sm font-semibold shadow-sm">
+            + Add
+          </button>
+          <div id="qty-controls-tomatoSoup" class="hidden flex items-center gap-2">
+            <button onclick="decrement('tomatoSoup')" class="bg-green-200 hover:bg-green-300 text-green-800 font-bold w-8 h-8 rounded-full">−</button>
+            <span id="qty-tomatoSoup" class="text-sm font-semibold w-6 text-center">1</span>
+            <button onclick="increment('tomatoSoup')" class="bg-green-200 hover:bg-green-300 text-green-800 font-bold w-8 h-8 rounded-full">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-200 my-2"></div>
+
+      <!-- Item: Manchow Soup -->
+      <div class="flex flex-wrap justify-between items-center gap-4 p-2">
+        <div>
+          <p class="font-semibold">Manchow Soup</p>
+          <p class="text-sm text-gray-600">Spicy and tangy Indo-Chinese soup</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-semibold bg-green-100 text-green-800 px-2 py-1 rounded-full">₹130</span>
+          <button onclick="addToCart('manchowSoup')" id="add-btn-manchowSoup" class="text-white bg-green-700 hover:bg-green-800 px-4 py-1.5 rounded-lg text-sm font-semibold shadow-sm">
+            + Add
+          </button>
+          <div id="qty-controls-manchowSoup" class="hidden flex items-center gap-2">
+            <button onclick="decrement('manchowSoup')" class="bg-green-200 hover:bg-green-300 text-green-800 font-bold w-8 h-8 rounded-full">−</button>
+            <span id="qty-manchowSoup" class="text-sm font-semibold w-6 text-center">1</span>
+            <button onclick="increment('manchowSoup')" class="bg-green-200 hover:bg-green-300 text-green-800 font-bold w-8 h-8 rounded-full">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category: Pastas -->
+    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Pastas</h2>
+
+      <!-- Item: Tomato Pasta -->
+      <div class="flex flex-wrap justify-between items-center gap-4 p-2">
+        <div>
+          <p class="font-semibold">Tomato Pasta</p>
+          <p class="text-sm text-gray-600">Tossed in rich tangy tomato sauce</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-semibold bg-green-100 text-green-800 px-2 py-1 rounded-full">₹180</span>
+          <button onclick="addToCart('tomatoPasta')" id="add-btn-tomatoPasta" class="text-white bg-green-700 hover:bg-green-800 px-4 py-1.5 rounded-lg text-sm font-semibold shadow-sm">
+            + Add
+          </button>
+          <div id="qty-controls-tomatoPasta" class="hidden flex items-center gap-2">
+            <button onclick="decrement('tomatoPasta')" class="bg-green-200 hover:bg-green-300 text-green-800 font-bold w-8 h-8 rounded-full">−</button>
+            <span id="qty-tomatoPasta" class="text-sm font-semibold w-6 text-center">1</span>
+            <button onclick="increment('tomatoPasta')" class="bg-green-200 hover:bg-green-300 text-green-800 font-bold w-8 h-8 rounded-full">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-200 my-2"></div>
+
+      <!-- Item: White Sauce Pasta -->
+      <div class="flex flex-wrap justify-between items-center gap-4 p-2">
+        <div>
+          <p class="font-semibold">White Sauce Pasta</p>
+          <p class="text-sm text-gray-600">Creamy blend with cheese & herbs</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-semibold bg-green-100 text-green-800 px-2 py-1 rounded-full">₹200</span>
+          <button onclick="addToCart('whiteSaucePasta')" id="add-btn-whiteSaucePasta" class="text-white bg-green-700 hover:bg-green-800 px-4 py-1.5 rounded-lg text-sm font-semibold shadow-sm">
+            + Add
+          </button>
+          <div id="qty-controls-whiteSaucePasta" class="hidden flex items-center gap-2">
+            <button onclick="decrement('whiteSaucePasta')" class="bg-green-200 hover:bg-green-300 text-green-800 font-bold w-8 h-8 rounded-full">−</button>
+            <span id="qty-whiteSaucePasta" class="text-sm font-semibold w-6 text-center">1</span>
+            <button onclick="increment('whiteSaucePasta')" class="bg-green-200 hover:bg-green-300 text-green-800 font-bold w-8 h-8 rounded-full">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Cart Button -->
+  <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+    <button class="bg-green-700 hover:bg-green-800 text-white px-6 py-3 rounded-full shadow-lg font-semibold tracking-wide">
+      🛒 View Cart
+    </button>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    const cart = {};
+
+    function addToCart(id) {
+      cart[id] = 1;
+      document.getElementById(`add-btn-${id}`).classList.add('hidden');
+      document.getElementById(`qty-controls-${id}`).classList.remove('hidden');
+      document.getElementById(`qty-${id}`).innerText = cart[id];
+    }
+
+    function increment(id) {
+      cart[id]++;
+      document.getElementById(`qty-${id}`).innerText = cart[id];
+    }
+
+    function decrement(id) {
+      cart[id]--;
+      if (cart[id] <= 0) {
+        delete cart[id];
+        document.getElementById(`add-btn-${id}`).classList.remove('hidden');
+        document.getElementById(`qty-controls-${id}`).classList.add('hidden');
+      } else {
+        document.getElementById(`qty-${id}`).innerText = cart[id];
+      }
+    }
+  </script>
+</body>
+</html>
