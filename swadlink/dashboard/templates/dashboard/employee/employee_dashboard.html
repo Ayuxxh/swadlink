@@ -22,10 +22,10 @@
   </div>
   
   <div class="flex items-center gap-3">
-    <a href="/owner/dashboard" class="text-sm font-medium text-[var(--green-main)] hover:underline">
+    <a href="{% url 'dashboard:dashboard' slug=cafe.slug %}" class="text-sm font-medium text-[var(--green-main)] hover:underline">
       Owner Dashboard
     </a>
-    <a href="/logout" class="text-sm text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md">
+    <a href="{% url 'accounts:logout' slug=cafe.slug %}" class="text-sm text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md">
       Logout
     </a>
   </div>
@@ -34,12 +34,12 @@
 
   <!-- Action Buttons -->
   <div class="flex flex-col sm:flex-row justify-center gap-4 my-6 px-4">
-    <button class="bg-[var(--green-main)] text-white font-medium px-6 py-2 rounded-md shadow hover:bg-green-700 transition">
+    <a href="{% url 'orders:create_order.order_summary' slug=cafe.slug %}" class="bg-[var(--green-main)] text-white font-medium px-6 py-2 rounded-md shadow hover:bg-green-700 transition">
       ➕ Create Order
-    </button>
-    <button class="bg-gray-200 text-green-800 font-medium px-6 py-2 rounded-md shadow hover:bg-gray-300 transition">
+    </a>
+    <a href="{% url 'dashboard:kot' slug=cafe.slug %}" class="bg-gray-200 text-green-800 font-medium px-6 py-2 rounded-md shadow hover:bg-gray-300 transition">
       🧾 KOT View
-    </button>
+    </a>
   </div>
 
   <!-- Orders Grid -->

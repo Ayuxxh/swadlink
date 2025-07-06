@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'accounts',
     'cafes',
     'dashboard',
+    'customer',
+    'menu',
+    'orders',
 
 ]
 

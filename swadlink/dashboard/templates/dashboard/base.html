@@ -28,9 +28,9 @@
     <nav id="nav-links" class="w-full md:w-auto md:flex hidden md:items-center md:gap-6 mt-2 md:mt-0">
       <a href="{% url 'dashboard:dashboard' slug=cafe.slug %}" class="block px-2 py-1 font-semibold">Dashboard</a>
       <a href="{% url 'dashboard:view_order' slug=cafe.slug %}" class="block px-2 py-1 font-semibold">Orders</a>
-      <a href="{% url 'dashboard:menu_upload' slug=cafe.slug %}" class="block px-2 py-1 font-semibold">Menu</a>
+      <a href="{% url 'dashboard:edit_menu' slug=cafe.slug %}" class="block px-2 py-1 font-semibold">Menu</a>
       <a href="{% url 'dashboard:reports' slug=cafe.slug %}" class="block px-2 py-1 font-semibold">Reports</a>
-      <a href="#" class="block px-2 py-1 font-semibold">Employee area</a>
+      <a href="{% url 'dashboard:employee_dashboard' slug=cafe.slug %}" class="block px-2 py-1 font-semibold">Employee area</a>
       <a href="{% url 'accounts:logout' slug=cafe.slug %}" class="block px-2 py-1 font-semibold">Logout</a>
     </nav>
   </header>
