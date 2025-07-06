@@ -9,13 +9,19 @@ from menu.models import Menu
 
 
 class Table(models.Model):
-    pass
+    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='tables')
+    table_number = models.CharField(max_length=10)  # could also be IntegerField
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Table {self.table_number} - {self.cafe.name}"
 
 class Order(models.Model):
     STATUS_CHOICES = [
         ('active', 'Active'),
         ('completed', 'Completed'),
         ('cancelled', 'Cancelled'),
+        ('served', 'Served'),
     ]
 
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='orders')
@@ -23,6 +29,7 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
+    table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
 
     def __str__(self):
         return f"Order #{self.id} - {self.customer.name} at {self.cafe.name}"
@@ -47,6 +54,7 @@ class Order(models.Model):
             "Order ID": self.id,
             "Customer": self.customer.name,
             "Phone": self.customer.phone_number,
+            "Table": self.table.table_number if self.table else "No table",
             "Items": [
                 {
                     "name": item.menu_item.name,

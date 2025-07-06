@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SwadLink KOT Dashboard</title>
+  <title>{{ cafe.name }} | KOT </title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .kot-scroll-area {
@@ -17,7 +17,7 @@
 <!-- Navbar -->
 <nav class="bg-green-50 shadow-md px-4 py-3 flex justify-between items-center border-b border-green-200">
   <div>
-    <h1 class="text-xl sm:text-2xl font-bold text-[var(--green-main)]">Deva’s Cafe</h1>
+    <h1 class="text-xl sm:text-2xl font-bold text-[var(--green-main)]">{{ cafe.name }}</h1>
     <p class="text-xs text-gray-600">Powered by <span class="font-semibold text-green-700">SwadLink</span></p>
   </div>
   
@@ -52,41 +52,27 @@
     <!-- Scrollable Order List -->
     <div class="kot-scroll-area space-y-4">
       
-      <!-- Order Card -->
-      <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-green-600">
-        <div class="flex justify-between items-start">
-          <div>
-            <h2 class="text-lg font-bold text-gray-800">Order #123 - Ramesh Patil</h2>
-            <p class="text-xs text-gray-500">2025-07-03 13:40</p>
-          </div>
-          <button class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 rounded-md">
-            Mark as Served
-          </button>
-        </div>
-        <ul class="mt-2 space-y-1 text-sm">
-          <li>• Paneer Tikka x2</li>
-          <li>• Masala Chai x1</li>
-          <li>• Butter Naan x3</li>
-        </ul>
-        <p class="mt-2 font-semibold text-green-700">Total: ₹480</p>
-      </div>
-
-      <!-- Simulated Shorter Card -->
-      <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-green-600">
-        <div class="flex justify-between items-start">
-          <div>
-            <h2 class="text-lg font-bold text-gray-800">Order #124 - Neha Joshi</h2>
-            <p class="text-xs text-gray-500">2025-07-03 13:45</p>
-          </div>
-          <button class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 rounded-md">
-            Mark as Served
-          </button>
-        </div>
-        <ul class="mt-2 space-y-1 text-sm">
-          <li>• Coffee x1</li>
-        </ul>
-        <p class="mt-2 font-semibold text-green-700">Total: ₹120</p>
-      </div>
+     {% for order in orders %}
+<div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-green-600">
+  <div class="flex justify-between items-start">
+    <div>
+      <h2 class="text-lg font-bold text-gray-800">Order #{{ order.id }} - {{ order.customer.name }}</h2>
+      <p class="text-xs text-gray-500">{{ order.created_at|date:"Y-m-d H:i" }}</p>
+    </div>
+    <a href="" class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 rounded-md">
+      Mark as Served
+    </a>
+  </div>
+  <ul class="mt-2 space-y-1 text-sm">
+    {% for item in order.items.all %}
+      <li>• {{ item.menu_item.name }} x{{ item.quantity }}</li>
+    {% endfor %}
+  </ul>
+  <p class="mt-2 font-semibold text-green-700">Total: ₹{{ order.total_amount|floatformat:0 }}</p>
+</div>
+{% empty %}
+  <p class="text-center text-gray-500 text-sm">No active orders in KOT.</p>
+{% endfor %}  
 
       <!-- Add more order cards here -->
 

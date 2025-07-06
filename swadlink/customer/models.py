@@ -28,7 +28,7 @@ class GlobalCustomerDB(models.Model):
 
 class CafeCustomerDB(models.Model):
     phone = models.CharField(max_length=15)  
-    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='cafedb')
+    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='cafe')
 
     def __str__(self):
         return f" ({self.phone}) - {self.cafe.name}"

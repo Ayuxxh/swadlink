@@ -15,6 +15,6 @@ urlpatterns = [
     path('employee/kot', views.kot, name='kot'),
     path('employee/', views.employee    , name='employee_dashboard'),
 
-    
-    # path('employee/orders', include('orders.urls', namespace='orders' )),
+
+
 ]

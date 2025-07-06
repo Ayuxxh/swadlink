@@ -133,3 +133,5 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 USE_DJANGO_JQUERY = True
 
 JQUERY_URL = True
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SwadLink Employee Dashboard</title>
+  <title>{{ cafe.name }} | Employee Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
@@ -17,7 +17,7 @@
 <!-- Navbar -->
 <nav class="bg-green-50 shadow-md px-4 py-3 flex justify-between items-center border-b border-green-200">
   <div>
-    <h1 class="text-xl sm:text-2xl font-bold text-[var(--green-main)]">Deva’s Cafe</h1>
+    <h1 class="text-xl sm:text-2xl font-bold text-[var(--green-main)]">{{ cafe.name }} </h1>
     <p class="text-xs text-gray-600">Powered by <span class="font-semibold text-green-700">SwadLink</span></p>
   </div>
   
@@ -32,9 +32,11 @@
 </nav>
 
 
+
+
   <!-- Action Buttons -->
   <div class="flex flex-col sm:flex-row justify-center gap-4 my-6 px-4">
-    <a href="{% url 'orders:create_order.order_summary' slug=cafe.slug %}" class="bg-[var(--green-main)] text-white font-medium px-6 py-2 rounded-md shadow hover:bg-green-700 transition">
+    <a href="{% url 'orders:create_order.get_customer_details' slug=cafe.slug %}" class="bg-[var(--green-main)] text-white font-medium px-6 py-2 rounded-md shadow hover:bg-green-700 transition">
       ➕ Create Order
     </a>
     <a href="{% url 'dashboard:kot' slug=cafe.slug %}" class="bg-gray-200 text-green-800 font-medium px-6 py-2 rounded-md shadow hover:bg-gray-300 transition">
@@ -43,42 +45,53 @@
   </div>
 
   <!-- Orders Grid -->
-  <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-10">
+  <!-- Orders Grid -->
+<div class="max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-10">
 
-    <!-- Order Card -->
-    <div class="bg-white border-l-4 border-[var(--green-main)] p-4 rounded-xl shadow hover:shadow-lg transition flex flex-col justify-between">
-      <div>
-        <h2 class="text-lg font-bold text-gray-800">Order #101 - Table 5</h2>
-        <p class="text-xs text-gray-500 mb-2">Placed at 2:14 PM</p>
-        <ul class="text-sm space-y-1 mb-4">
-          <li>• Paneer Tikka x2</li>
-          <li>• Butter Naan x3</li>
-        </ul>
-        <p class="text-sm font-semibold text-[var(--green-main)]">Total: ₹480</p>
-      </div>
-      <div class="grid grid-cols-3 gap-2 mt-4">
-        <button class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs py-1 rounded">Update</button>
-        <button class="bg-green-600 hover:bg-green-700 text-white text-xs py-1 rounded">Close</button>
-        <button class="bg-red-600 hover:bg-red-700 text-white text-xs py-1 rounded">Cancel</button>
-      </div>
-    </div>
+  {% for order in orders %}
+  <div class="bg-white border-l-4 border-[var(--green-main)] p-4 rounded-xl shadow hover:shadow-lg transition flex flex-col justify-between">
+    <div>
+      <h2 class="text-lg font-bold text-gray-800">
+        Order #{{ order.id }} - Table {{ order.table.table_number }}
+      </h2>
+      <p class="text-xs text-gray-500 mb-2">Placed at {{ order.created_at|time:"P" }}</p>
 
-    <!-- Order Card -->
-    <div class="bg-white border-l-4 border-[var(--green-main)] p-4 rounded-xl shadow hover:shadow-lg transition flex flex-col justify-between">
-      <div>
-        <h2 class="text-lg font-bold text-gray-800">Order #102 - Table 2</h2>
-        <p class="text-xs text-gray-500 mb-2">Placed at 2:16 PM</p>
-        <ul class="text-sm space-y-1 mb-4">
-          <li>• Cold Coffee x1</li>
-        </ul>
-        <p class="text-sm font-semibold text-[var(--green-main)]">Total: ₹120</p>
-      </div>
-      <div class="grid grid-cols-3 gap-2 mt-4">
-        <button class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs py-1 rounded">Update</button>
-        <button class="bg-green-600 hover:bg-green-700 text-white text-xs py-1 rounded">Close</button>
-        <button class="bg-red-600 hover:bg-red-700 text-white text-xs py-1 rounded">Cancel</button>
-      </div>
+      <ul class="text-sm space-y-1 mb-4">
+        {% for item in order.items.all %}
+          <li>• {{ item.menu_item.name }} x{{ item.quantity }}</li>
+        {% endfor %}
+      </ul>
+
+      <p class="text-sm font-semibold text-[var(--green-main)]">
+        Total: ₹{{ order.total_amount|floatformat:0 }}
+      </p>
     </div>
+<div class="grid grid-cols-3 gap-2 mt-4 text-center text-xs font-semibold">
+  <!-- Update -->
+  <a href="{% url 'orders:create_order.update_items' slug=cafe.slug %}?order_id={{ order.id }}"
+     class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg shadow transition">
+    Update
+  </a>
+
+  <!-- Close -->
+  <a href="#"
+     class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg shadow transition">
+    Close
+  </a>
+
+  <!-- Cancel -->
+  <a href="#"
+     class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg shadow transition">
+    Cancel
+  </a>
+</div>
+  </div>
+  {% empty %}
+    <p class="text-center text-gray-500 col-span-3">No active orders found.</p>
+  {% endfor %}
+
+</div>
+
 
     <!-- Add more order cards as needed -->
 
