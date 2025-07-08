@@ -5,16 +5,28 @@ from datetime import timezone as dt_timezone
 from django.db.models import Sum
 from pytz import timezone as pytz_timezone
 
+def parse_date(date_str):
+    try:
+        return datetime.strptime(date_str, "%Y-%m-%d").date()
+    except (ValueError, TypeError):
+        return None
 
-
-def get_timeframe_parts(filter_type):
+def get_timeframe_parts(filter_type, custom_from=None, custom_to=None):
 
 
     IST = pytz_timezone('Asia/Kolkata')
 
     now = timezone.now()  # stays in UTC
 
-    if filter_type == 'daily':
+
+
+    if filter_type == 'custom' and custom_from and custom_to:
+        from_date = timezone.make_aware(datetime.combine(custom_from, datetime.min.time()), IST)
+        to_date = timezone.make_aware(datetime.combine(custom_to, datetime.max.time()), IST)
+        trunc = TruncDay('created_at')
+        delta = timedelta(days=1)
+
+    elif filter_type == 'daily':
         from_date = now - timedelta(days=1)
         to_date = now
         trunc = TruncHour('created_at')
@@ -92,3 +104,25 @@ def generate_sales_series(orders, from_date, to_date, trunc, delta):
             cursor += delta
 
     return sales_over_time
+
+
+
+from django.http import HttpResponse
+import csv
+
+def generate_csv_response(report_data, filename_prefix):
+    if not report_data:
+        return HttpResponse("No data available to download", content_type="text/plain")
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{filename_prefix}_report.csv"'
+
+    writer = csv.writer(response)
+    
+    headers = list(report_data[0].keys())
+    writer.writerow(headers)
+
+    for row in report_data:
+        writer.writerow([row.get(h, '') for h in headers])
+
+    return response

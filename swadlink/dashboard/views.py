@@ -8,14 +8,14 @@ from orders.models import Order
 import csv
 from io import TextIOWrapper
 from utils.decorators import owner_or_superuser_required
-from django.db.models import Q, F, Sum, DecimalField, ExpressionWrapper,  Count
-from django.utils.safestring import mark_safe
-import json
-from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import  Sum,  Count
 
-from .utils import get_timeframe_parts, generate_sales_series
+from django.core.paginator import Paginator
+from django.utils.timezone import now, timedelta
 
-from django.utils import timezone
+from .utils import get_timeframe_parts, generate_sales_series, parse_date, generate_csv_response
+from .report_builder import build_order_report
+
 
 @owner_or_superuser_required
 def dashboard(request,cafe , owner, slug):
@@ -81,15 +81,69 @@ def dashboard(request,cafe , owner, slug):
 
 @owner_or_superuser_required
 def view_orders(request,cafe , owner,  slug):
+    # Get 30 days ago datetime
+    thirty_days_ago = now() - timedelta(days=30)
 
-    return render(request,'dashboard/owner/view_order_history.html', {"cafe": cafe})
+    # Filter orders for this cafe in last 30 days, newest first
+    order_qs = Order.objects.filter(
+        cafe=cafe,
+        created_at__gte=thirty_days_ago
+    ).prefetch_related('items__menu_item', 'table').order_by('-created_at')
 
+    # Pagination
+    paginator = Paginator(order_qs, 10)  # 10 orders per page
+    page_number = request.GET.get("page")
+    orders_page = paginator.get_page(page_number)
+
+    return render(request, 'dashboard/owner/view_order_history.html', {
+        "cafe": cafe,
+        "orders": orders_page
+    })
 
 
 @owner_or_superuser_required
 def download_reports(request,cafe , owner,  slug):
+    report_type = request.GET.get("report", "orders")
+    filter_type = request.GET.get("filter", "daily")
+    custom_from = parse_date(request.GET.get("from"))
+    custom_to = parse_date(request.GET.get("to"))
 
-    return render(request,'dashboard/owner/report.html', {"cafe": cafe})
+    from_date, to_date, trunc, delta = get_timeframe_parts(filter_type, custom_from, custom_to)
+
+    # Build the actual report
+    if report_type == "orders":
+        report_data = build_order_report(cafe, from_date, to_date)
+    else:
+        report_data = []
+
+    # Download CSV
+    if request.GET.get("download") == "1":
+        return generate_csv_response(report_data, filename_prefix=f"{cafe.slug}_{report_type}")
+
+    headers = list(report_data[0].keys()) if report_data else []
+    report_preview = report_data[:10]
+
+    print("DEBUG:", report_type, filter_type, custom_from, custom_to)
+    print("FROM:", from_date, "TO:", to_date)
+    print("Orders count:", len(report_data))
+
+    context = {
+        "cafe": cafe,
+        "report": report_data,
+        "report_preview": report_preview,
+        "report_type": report_type,
+        "headers": headers,
+        "current_filter": filter_type,
+        "current_report": report_type,
+            "filter_options": [
+        ("daily", "Daily"),
+        ("weekly", "Weekly"),
+        ("monthly", "Monthly"),
+        ("custom", "Custom Range"),
+    ],
+    }
+
+    return render(request, 'dashboard/owner/report.html', context)
 
 @owner_or_superuser_required
 def upload_menu(request,cafe , owner,  slug):
@@ -191,18 +245,18 @@ def employee(request,cafe , owner,  slug):
         status__in=['active', 'served']
     ).prefetch_related('items__menu_item', 'table')  # optional optimization
 
-    params  = {
+    context  = {
         "cafe": cafe,
         "orders" : orders,
     }
-    return render(request,'dashboard/employee/employee_dashboard.html', params)
+    return render(request,'dashboard/employee/employee_dashboard.html', context)
 
 @owner_or_superuser_required
 def kot(request,cafe , owner,  slug):
     cafe = get_object_or_404(Cafe, slug=cafe.slug)
     orders = Order.objects.filter(cafe=cafe, status='active').prefetch_related('items__menu_item', 'table').order_by('created_at') 
-    params= {
+    context= {
         'orders' : orders,
         'cafe' : cafe
     }
-    return render(request,'dashboard/employee/kot.html', params)
+    return render(request,'dashboard/employee/kot.html', context)

@@ -6,7 +6,7 @@
 <div class="flex flex-wrap justify-center my-6 gap-2 px-4">
 {% for timeframe in timeframes %}
   <a href="?filter={{ timeframe }}"
-     class="filter-btn px-4 py-2 rounded-xl font-semibold border border-[var(--gray-border)]
+     class="filter-btn px-4 py-2 rounded-xl font-semibold border border-[var(--gray-border)] hover:text-green-800 transition
             {% if selected_filter == timeframe %} bg-[var(--green-filter)] {% else %} bg-white {% endif %}">
     {{ timeframe|title }}
   </a>
