@@ -6,6 +6,12 @@ from accounts.models import CustomUser
 from customer.models import GlobalCustomerDB
 from menu.models import Menu
 
+from django.utils.timesince import timesince
+from django.utils.timezone import now
+
+
+from decimal import Decimal
+
 
 
 class Table(models.Model):
@@ -65,6 +71,39 @@ class Order(models.Model):
             "Status": self.status,
             "Cafe": self.cafe.name
         }
+    
+
+    @property
+    def total_amount(self):
+        return sum(
+            Decimal(item.quantity) * item.menu_item.price
+            for item in self.items.select_related('menu_item').all()
+        )
+    
+
+    @property
+    def estimated_profit(self):
+        return self.total_amount - self.real_cost
+        
+    @property
+    def real_cost(self):
+        return sum(
+            Decimal(item.quantity) * (item.menu_item.cost or Decimal('0'))
+            for item in self.items.select_related('menu_item').all()
+        )
+    
+    @classmethod
+    def get_average_order_value(cls, queryset):
+        count = queryset.count()
+        if count == 0:
+            return Decimal('0.00')
+        total = sum(order.total_amount for order in queryset)
+        return total / Decimal(count)
+    
+    @property
+    def time_ago(self):
+        return timesince(self.created_at, now()) + " ago"
+        
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')

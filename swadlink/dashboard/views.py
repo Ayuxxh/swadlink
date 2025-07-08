@@ -1,20 +1,83 @@
 
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden
+
 from django.contrib import messages
 from  cafes.models import Cafe
 from menu.models import Menu
-from orders.models import Order, OrderItem
+from orders.models import Order
 import csv
 from io import TextIOWrapper
 from utils.decorators import owner_or_superuser_required
-from django.db.models import Q, F, Sum, DecimalField, ExpressionWrapper
+from django.db.models import Q, F, Sum, DecimalField, ExpressionWrapper,  Count
+from django.utils.safestring import mark_safe
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+
+from .utils import get_timeframe_parts, generate_sales_series
+
+from django.utils import timezone
 
 @owner_or_superuser_required
 def dashboard(request,cafe , owner, slug):
+    filter_type = request.GET.get('filter', 'daily')
 
-    return render(request,'dashboard/owner/dashboard.html', {"cafe": cafe, "owner":owner})
+    from_date, to_date, trunc, delta = get_timeframe_parts(filter_type)
+
+    orders = Order.objects.filter(cafe=cafe, created_at__range=(from_date, to_date))
+    print("FROM:", from_date)
+    print("TO:", to_date)
+    print("ORDERS:", orders.count())
+
+
+    total_revenue = sum(order.total_amount for order in orders)
+    estimated_profit = sum(order.estimated_profit for order in orders)
+    avg_order = Order.get_average_order_value(orders)
+
+    top_employee = (
+        orders.values('created_by__name')
+        .annotate(order_count=Count('id'))
+        .order_by('-order_count')
+        .first()
+    )
+    sales_over_time = generate_sales_series(orders, from_date, to_date, trunc, delta)   
+
+    bestsellers = (
+        orders.values('items__menu_item__name')
+        .annotate(quantity_sold=Sum('items__quantity'))
+        .order_by('-quantity_sold')[:5]
+    )
+
+    bestseller_chart = [
+    {
+        "item": item['items__menu_item__name'],
+        "quantity": item['quantity_sold']
+    }
+    for item in bestsellers
+    ]
+
+
+
+    timeframes = ['daily', 'weekly', 'monthly', 'yearly']
+
+    context = {
+        "cafe": cafe,
+        "owner": owner,
+        "selected_filter": filter_type,
+        "total_revenue": total_revenue,
+        "total_orders": orders.count(),
+        "avg_order": avg_order,
+        "estimated_profit": estimated_profit,
+        "recent_orders": orders.order_by('-created_at')[:5],
+        "top_employee": top_employee,
+        "timeframes": timeframes,
+        "timeframes": ['daily', 'weekly', 'monthly', 'yearly'],
+        "sales_over_time": sales_over_time,
+         "bestseller_chart": bestseller_chart,
+    }
+    return render(request,'dashboard/owner/dashboard.html', context)
+
+
+
 
 @owner_or_superuser_required
 def view_orders(request,cafe , owner,  slug):
@@ -124,23 +187,10 @@ def employee(request,cafe , owner,  slug):
 
 
     orders = Order.objects.filter(
-        Q(cafe=cafe),
-        Q(status__in=['active', 'served'])  # Include both active and served
-    ).prefetch_related('items__menu_item', 'table') \
-    .annotate(
-        total_amount=Sum(
-            ExpressionWrapper(
-                F('items__quantity') * F('items__menu_item__price'),
-                output_field=DecimalField(max_digits=10, decimal_places=2)
-            )
-        )
-    )
-    print("Order Count:", orders.count())
-    for order in orders:
-        print("Order ID:", order.id, "| Total:", order.total_amount)
-        for item in order.items.all():
-            print("-", item.menu_item.name, "x", item.quantity)
-        
+        cafe=cafe,
+        status__in=['active', 'served']
+    ).prefetch_related('items__menu_item', 'table')  # optional optimization
+
     params  = {
         "cafe": cafe,
         "orders" : orders,
