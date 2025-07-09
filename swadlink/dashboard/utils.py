@@ -126,3 +126,12 @@ def generate_csv_response(report_data, filename_prefix):
         writer.writerow([row.get(h, '') for h in headers])
 
     return response
+
+
+
+
+
+
+
+
+

@@ -75,7 +75,7 @@
         <tbody>
           {% for order in recent_orders %}
           <tr>
-            <td class="px-2 py-1 border border-[var(--gray-border)]">{{ order.id }}</td>
+            <td class="px-2 py-1 border border-[var(--gray-border)]">{{ order.order_code|slice:"-3:" }}</td>
             <td class="px-2 py-1 border border-[var(--gray-border)]">
       <span class="inline-block px-2 py-1 text-xs rounded 
         {% if order.status == 'completed' %} bg-green-100 text-green-800 
