@@ -1,6 +1,6 @@
 
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
-
+from django.http import JsonResponse
 from django.contrib import messages
 from  cafes.models import Cafe
 from menu.models import Menu
@@ -16,6 +16,7 @@ from django.utils.timezone import now, timedelta
 from .utils import get_timeframe_parts, generate_sales_series, parse_date, generate_csv_response
 from .report_builder import build_order_report
 
+from django.utils.timezone import localdate
 
 @owner_or_superuser_required
 def dashboard(request,cafe , owner, slug):
@@ -252,11 +253,50 @@ def employee(request,cafe , owner,  slug):
     return render(request,'dashboard/employee/employee_dashboard.html', context)
 
 @owner_or_superuser_required
+def mark_order_served(request, order_id, slug,cafe, owner):
+    try:
+
+        order = Order.objects.get(id=order_id, cafe=cafe, status='active')
+        order.status = 'served'
+        order.save()
+        return JsonResponse({'success': True})
+    except Order.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Order not found'}, status=404)
+
+
+@owner_or_superuser_required
+def kot_data(request,slug, cafe, owner):
+
+    orders = Order.objects.filter(cafe=cafe, status='active').prefetch_related('items__menu_item', 'customer').order_by('-created_at')
+    data = {
+        "orders": [
+            {
+                "id": o.id,
+                "order_code": o.order_code.split('-')[-1],
+                "created_at": o.created_at.strftime('%Y-%m-%d %H:%M'),
+                "items": [{"name": i.menu_item.name, "qty": i.quantity} for i in o.items.all()],
+                "customer_name": o.customer.name,
+                "total": float(o.total_amount)
+            } for o in orders
+        ]
+    }
+    return JsonResponse(data)
+
+@owner_or_superuser_required
 def kot(request,cafe , owner,  slug):
     cafe = get_object_or_404(Cafe, slug=cafe.slug)
-    orders = Order.objects.filter(cafe=cafe, status='active').prefetch_related('items__menu_item', 'table').order_by('created_at') 
+    orders = Order.objects.filter(
+        cafe=cafe,
+        status='active'
+    ).select_related(
+        'table'
+    ).prefetch_related(
+        'items__menu_item'
+    ).order_by('-created_at')
     context= {
         'orders' : orders,
         'cafe' : cafe
     }
+
+
     return render(request,'dashboard/employee/kot.html', context)

@@ -3,92 +3,152 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ cafe.name }} | KOT </title>
+  <title>{{ cafe.name }} | KOT</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .kot-scroll-area {
-      max-height: calc(100vh - 140px); /* avoid scroll on page */
+      max-height: calc(100vh - 140px);
       overflow-y: auto;
     }
   </style>
 </head>
 <body class="bg-gray-100 font-sans relative">
-    
+
 <!-- Navbar -->
 <nav class="bg-green-50 shadow-md px-4 py-3 flex justify-between items-center border-b border-green-200">
   <div>
     <h1 class="text-xl sm:text-2xl font-bold text-[var(--green-main)]">{{ cafe.name }}</h1>
     <p class="text-xs text-gray-600">Powered by <span class="font-semibold text-green-700">SwadLink</span></p>
   </div>
-  
   <div class="flex items-center gap-3">
-
     <a href="{% url 'dashboard:employee_dashboard' slug=cafe.slug %}" class="text-sm text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md">
       Exit KOT
     </a>
   </div>
 </nav>
 
-
-
-  <!-- Exit KOT Button
-  <div class="fixed right-4 top-4 z-50">
-    <a href="/dashboard" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium shadow">
-      Exit KOT
-    </a>
-  </div> -->
-
-  <!-- Notification (appears when new order is added) -->
-  <div id="notification" class="hidden fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-green-600 text-white px-4 py-2 rounded shadow-lg animate-bounce">
-    🆕 New Order Received!
-  </div>
-
-  <!-- Main Content -->
-  <div class="max-w-4xl mx-auto py-6 px-4">
-
-    <!-- Title -->
-    <h1 class="text-2xl sm:text-3xl font-bold mb-4 text-center">🧾 Live KOT Orders</h1>
-
-    <!-- Scrollable Order List -->
-    <div class="kot-scroll-area space-y-4">
-      
-     {% for order in orders %}
-<div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-green-600">
-  <div class="flex justify-between items-start">
-    <div>
-      <h2 class="text-lg font-bold text-gray-800">Order #{{ order.id }} - {{ order.customer.name }}</h2>
-      <p class="text-xs text-gray-500">{{ order.created_at|date:"Y-m-d H:i" }}</p>
-    </div>
-    <a href="" class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 rounded-md">
-      Mark as Served
-    </a>
-  </div>
-  <ul class="mt-2 space-y-1 text-sm">
-    {% for item in order.items.all %}
-      <li>• {{ item.menu_item.name }} x{{ item.quantity }}</li>
-    {% endfor %}
-  </ul>
-  <p class="mt-2 font-semibold text-green-700">Total: ₹{{ order.total_amount|floatformat:0 }}</p>
+<!-- Notification -->
+<div id="notification"
+     class="hidden w-full bg-green-600 text-white px-4 py-2 shadow-md border-b border-green-500 animate-slide-in-down opacity-0 transition-all duration-500 ease-out text-center text-sm sm:text-base ">
+ New Order Received!
 </div>
-{% empty %}
-  <p class="text-center text-gray-500 text-sm">No active orders in KOT.</p>
-{% endfor %}  
 
-      <!-- Add more order cards here -->
-
-    </div>
+<!-- Main Content -->
+<div class="max-w-4xl mx-auto py-6 px-4">
+  <h1 class="text-2xl sm:text-3xl font-bold mb-4 text-center">🧾 Live KOT Orders</h1>
+  <div id="order-list" class="kot-scroll-area space-y-4">
+    <!-- Orders will be loaded here dynamically -->
   </div>
+</div>
 
-  <!-- Simulate new order notification (you can replace with WebSocket trigger) -->
-  <script>
-    setTimeout(() => {
-      const notification = document.getElementById("notification");
-      notification.classList.remove("hidden");
-      setTimeout(() => {
-        notification.classList.add("hidden");
-      }, 3000);
-    }, 4000); // Simulates new order in 4 seconds
-  </script>
+<script>
+  const orderList = document.getElementById("order-list");
+  let currentOrderIds = [];
+
+  async function fetchOrders() {
+    try {
+      const res = await fetch("{% url 'dashboard:kot_data' cafe.slug %}");
+      const data = await res.json();
+      const newOrderIds = data.orders.map(o => o.id);
+
+      // Compare and show notification if new order arrived
+      const isNewOrder = newOrderIds.some(id => !currentOrderIds.includes(id));
+      if (isNewOrder) {
+        showNotification();
+      }
+
+      currentOrderIds = newOrderIds;
+
+      // Render orders
+      orderList.innerHTML = '';
+      if (data.orders.length === 0) {
+        orderList.innerHTML = '<p class="text-center text-gray-500 text-sm">No active orders in KOT.</p>';
+        return;
+      }
+
+      data.orders.forEach(order => {
+        const div = document.createElement("div");
+        div.className = "bg-white p-4 rounded-xl shadow-md border-l-4 border-green-600";
+        div.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <h2 class="text-lg font-bold text-gray-800">Order #${order.order_code} - ${order.customer_name}</h2>
+              <p class="text-xs text-gray-500">${order.created_at}</p>
+            </div>
+            <button onclick="markServed(${order.id})" class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 rounded-md">
+              Mark as Served
+            </button>
+          </div>
+          <ul class="mt-2 space-y-1 text-sm">
+            ${order.items.map(i => `<li>• ${i.name} x${i.quantity}</li>`).join('')}
+          </ul>
+          <p class="mt-2 font-semibold text-green-700">Total: ₹${order.total}</p>
+        `;
+        orderList.appendChild(div);
+      });
+
+            if (newOrders.length > currentOrderCount) {
+        showNotification();
+      }
+
+      // Update current count
+      currentOrderCount = newOrders.length;
+
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+    }
+  }
+  
+
+  async function markServed(orderId) {
+    try {
+          const urlTemplate = "{% url 'dashboard:kot_mark_served'  cafe.slug 0 %}";
+    const finalUrl = urlTemplate.replace("0", orderId);
+      const res = await fetch(finalUrl, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}'
+        }
+      });
+      if (res.ok) {
+        // Now fetch fresh data
+        await fetchOrders();
+      } else {
+        console.error("Serve failed", res.status);
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
+  }
+
+  function showNotification() {
+    const notif = document.getElementById("notification");
+    notif.classList.remove("hidden");
+    setTimeout(() => notif.classList.add("hidden"), 3000);
+  }
+
+  // Start polling every 5 seconds
+  fetchOrders();
+  setInterval(fetchOrders, 5000);
+</script>
+
+<style>
+  @keyframes slideInDown {
+    from {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-in-down {
+    animation: slideInDown 0.4s ease-out forwards;
+  }
+</style>
+
 
 </body>
 </html>
