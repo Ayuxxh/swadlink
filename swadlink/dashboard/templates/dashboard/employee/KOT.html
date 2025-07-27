@@ -80,7 +80,7 @@
             </button>
           </div>
           <ul class="mt-2 space-y-1 text-sm">
-            ${order.items.map(i => `<li>• ${i.name} x${i.quantity}</li>`).join('')}
+            ${order.items.map(i => `<li>• ${i.name} x${i.qty}</li>`).join('')}
           </ul>
           <p class="mt-2 font-semibold text-green-700">Total: ₹${order.total}</p>
         `;

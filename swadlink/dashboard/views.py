@@ -16,7 +16,10 @@ from django.utils.timezone import now, timedelta
 from .utils import get_timeframe_parts, generate_sales_series, parse_date, generate_csv_response
 from .report_builder import build_order_report
 
-from django.utils.timezone import localdate
+
+from django.utils.timezone import localtime
+
+
 
 @owner_or_superuser_required
 def dashboard(request,cafe , owner, slug):
@@ -284,7 +287,7 @@ def kot_data(request,slug, cafe, owner):
 
 @owner_or_superuser_required
 def kot(request,cafe , owner,  slug):
-    cafe = get_object_or_404(Cafe, slug=cafe.slug)
+
     orders = Order.objects.filter(
         cafe=cafe,
         status='active'
@@ -300,3 +303,54 @@ def kot(request,cafe , owner,  slug):
 
 
     return render(request,'dashboard/employee/kot.html', context)
+
+from django.db.models import Q
+
+@owner_or_superuser_required
+def employee_live_orders(request, slug, cafe, owner):
+
+    orders = Order.objects.filter(
+        cafe=cafe,  
+        status__in=['active', 'served'] ).select_related('table').prefetch_related('items__menu_item', 'customer').order_by('-created_at')
+
+    data = []
+    for order in orders:
+        data.append({
+            'id': order.id,
+            'table': order.table.table_number if order.table.table_number else "N/A",
+            'time': localtime(order.created_at).strftime("%I:%M %p"),
+            'total': round(order.total_amount),
+            'order_code' :  str(order.order_code).split('-')[-1],
+            'total_amount': order.total_amount,
+            'items': [
+                {'name': i.menu_item.name, 'qty': i.quantity}
+                for i in order.items.all()
+            ]
+        })
+
+    return JsonResponse({'orders': data})
+
+
+
+@owner_or_superuser_required
+def cancel_order(request, order_id, cafe, owner, slug):
+    order = get_object_or_404(Order, id=order_id, cafe=cafe)
+
+    # Optional: only allow cancel if active
+    if order.status not in ['active', 'served']:
+        
+        return JsonResponse({'success': False, 'error': 'Cannot cancel this order.'}, status=400)
+
+    order.cancel_order()
+    print('cancelled')
+    return JsonResponse({'success': True})
+
+
+@owner_or_superuser_required
+def close_order(request, order_id, cafe, owner, slug):
+
+    if request.method == 'POST':
+        order = get_object_or_404(Order, id=order_id, cafe=cafe)
+
+    return render(request, 'orders/update_order.html')
+
