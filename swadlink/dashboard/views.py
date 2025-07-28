@@ -349,8 +349,24 @@ def cancel_order(request, order_id, cafe, owner, slug):
 @owner_or_superuser_required
 def close_order(request, order_id, cafe, owner, slug):
 
-    if request.method == 'POST':
-        order = get_object_or_404(Order, id=order_id, cafe=cafe)
+    order = get_object_or_404(Order, id=order_id, cafe=cafe)
 
-    return render(request, 'orders/update_order.html')
+    if request.method == 'POST':
+
+        print('posting')
+        order = get_object_or_404(Order, id=order_id, cafe=cafe)
+        payment_method = request.POST.get('payment')
+        print(payment_method, 'nm')
+
+        order.status = 'completed'
+        order.save()
+
+       
+        return redirect('dashboard:employee_dashboard', slug = cafe.slug)
+
+    
+        
+        
+    context = {'cafe' : cafe}
+    return render(request, 'orders/close_order.html', context)
 

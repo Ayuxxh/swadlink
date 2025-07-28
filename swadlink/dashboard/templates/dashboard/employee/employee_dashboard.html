@@ -17,7 +17,7 @@
 <!-- Navbar -->
 <nav class="bg-green-50 shadow-md px-4 py-3 flex justify-between items-center border-b border-green-200">
   <div>
-    <h1 class="text-xl sm:text-2xl font-bold text-[var(--green-main)]">{{ cafe.name }} </h1>
+    <h1 class="text-xl sm:text-2xl font-bold text-[var(--green-main)]">{{ cafe.name }}</h1>
     <p class="text-xs text-gray-600">Powered by <span class="font-semibold text-green-700">SwadLink</span></p>
   </div>
   
@@ -88,7 +88,7 @@ async function fetchOrders() {
 
       <div class="grid grid-cols-3 gap-2 mt-4 text-center text-xs font-semibold">
         <a href="/orders/create/update-items/${cafeSlug}/?order_id=${order.id}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg shadow transition">Update</a>
-        <a href="#" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg shadow transition">Close</a>
+        <a href="#" onclick="closeOrder(${order.id}, this)"  class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg shadow transition" >Close</a>
         <button onclick="cancelOrder(${order.id})"
           class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg shadow transition">
           Cancel
@@ -103,6 +103,14 @@ async function fetchOrders() {
 fetchOrders();
 // Poll every 15 seconds
 setInterval(fetchOrders, 10000);
+
+ function closeOrder(orderId, element) {
+
+    const urlTemplate = "{% url 'dashboard:close_order'  cafe.slug 0 %}";
+    const url = urlTemplate.replace("0", orderId);
+    console.log(url)
+    element.href = url;
+  };
 
 
 async function cancelOrder(orderId) {
