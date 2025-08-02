@@ -7,7 +7,7 @@ from menu.models import Menu
 from orders.models import Order
 import csv
 from io import TextIOWrapper
-from utils.decorators import owner_or_superuser_required
+from utils.decorators import owner_or_superuser_required, owner_employee_or_admin_required
 from django.db.models import  Sum,  Count
 
 from django.core.paginator import Paginator
@@ -127,9 +127,7 @@ def download_reports(request,cafe , owner,  slug):
     headers = list(report_data[0].keys()) if report_data else []
     report_preview = report_data[:10]
 
-    print("DEBUG:", report_type, filter_type, custom_from, custom_to)
-    print("FROM:", from_date, "TO:", to_date)
-    print("Orders count:", len(report_data))
+
 
     context = {
         "cafe": cafe,
@@ -238,8 +236,8 @@ def upload_menu(request,cafe , owner,  slug):
 
 
 
-@owner_or_superuser_required
-def employee(request,cafe , owner,  slug):
+@owner_employee_or_admin_required
+def employee(request,cafe , user,  slug):
     cafe = get_object_or_404(Cafe, slug=cafe.slug)
     
 
@@ -255,7 +253,7 @@ def employee(request,cafe , owner,  slug):
     }
     return render(request,'dashboard/employee/employee_dashboard.html', context)
 
-@owner_or_superuser_required
+@owner_employee_or_admin_required
 def mark_order_served(request, order_id, slug,cafe, owner):
     try:
 
@@ -267,7 +265,7 @@ def mark_order_served(request, order_id, slug,cafe, owner):
         return JsonResponse({'success': False, 'error': 'Order not found'}, status=404)
 
 
-@owner_or_superuser_required
+@owner_employee_or_admin_required
 def kot_data(request,slug, cafe, owner):
 
     orders = Order.objects.filter(cafe=cafe, status='active').prefetch_related('items__menu_item', 'customer').order_by('-created_at')
@@ -285,8 +283,8 @@ def kot_data(request,slug, cafe, owner):
     }
     return JsonResponse(data)
 
-@owner_or_superuser_required
-def kot(request,cafe , owner,  slug):
+@owner_employee_or_admin_required
+def kot(request,cafe , user,  slug):
 
     orders = Order.objects.filter(
         cafe=cafe,
@@ -296,18 +294,21 @@ def kot(request,cafe , owner,  slug):
     ).prefetch_related(
         'items__menu_item'
     ).order_by('-created_at')
+    
     context= {
         'orders' : orders,
         'cafe' : cafe
     }
 
 
+
+
     return render(request,'dashboard/employee/kot.html', context)
 
 from django.db.models import Q
 
-@owner_or_superuser_required
-def employee_live_orders(request, slug, cafe, owner):
+@owner_employee_or_admin_required
+def employee_live_orders(request, slug, cafe, user):
 
     orders = Order.objects.filter(
         cafe=cafe,  
@@ -332,8 +333,8 @@ def employee_live_orders(request, slug, cafe, owner):
 
 
 
-@owner_or_superuser_required
-def cancel_order(request, order_id, cafe, owner, slug):
+@owner_employee_or_admin_required
+def cancel_order(request, order_id, cafe, user, slug):
     order = get_object_or_404(Order, id=order_id, cafe=cafe)
 
     # Optional: only allow cancel if active
@@ -346,19 +347,18 @@ def cancel_order(request, order_id, cafe, owner, slug):
     return JsonResponse({'success': True})
 
 
-@owner_or_superuser_required
-def close_order(request, order_id, cafe, owner, slug):
+@owner_employee_or_admin_required
+def close_order(request, order_id, cafe, user, slug):
 
-    order = get_object_or_404(Order, id=order_id, cafe=cafe)
+    order = get_object_or_404(Order.objects.prefetch_related('items'), id=order_id, cafe=cafe)
 
     if request.method == 'POST':
 
         print('posting')
         order = get_object_or_404(Order, id=order_id, cafe=cafe)
         payment_method = request.POST.get('payment')
-        print(payment_method, 'nm')
-
         order.status = 'completed'
+        order.payment_mode = payment_method
         order.save()
 
        
@@ -367,6 +367,9 @@ def close_order(request, order_id, cafe, owner, slug):
     
         
         
-    context = {'cafe' : cafe}
+    context = {'cafe' : cafe,
+               'order' : order,
+               'order_code': str(order.order_code).split('-')[-1]
+               }
     return render(request, 'orders/close_order.html', context)
 

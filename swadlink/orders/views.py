@@ -87,13 +87,6 @@ def summmary(request, slug):
         cafe = get_object_or_404(Cafe, slug=slug)
 
         cart_data_json = request.POST.get("cart_data")
-        # customer_json = request.POST.get("customer_json")
-
-        print(" cart_data:", cart_data_json)
-        # print(" customer_json:", customer_json)
-
-        # if not customer_json or not cart_data_json:
-        #     return JsonResponse({"error": "Missing customer or cart data"}, status=400)
 
         try:
             cart = json.loads(cart_data_json)
@@ -168,3 +161,12 @@ def summmary(request, slug):
         })
 
     return JsonResponse({"error": "Invalid request fallback"}, status=400)
+
+
+
+def print_bill(request, order_id, slug):
+
+    cafe = get_object_or_404(Cafe, slug=slug)
+    order = get_object_or_404(Order.objects.prefetch_related('items'), id=order_id, cafe=cafe)
+    order_code =  str(order.order_code).split('-')[-1]
+    return render(request, 'orders/bill.html', {'order': order, 'cafe' : cafe, 'order_code': order_code})

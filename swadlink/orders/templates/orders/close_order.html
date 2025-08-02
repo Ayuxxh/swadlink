@@ -26,11 +26,11 @@
     <div class="flex justify-between items-center mb-4">
       <div>
         <h2 class="text-2xl font-bold text-gray-800">Close Order</h2>
-        <p class="text-sm text-gray-500">Order #SL1023 · Table T2</p>
-        <p class="text-sm text-gray-500">Started: 3:45 PM</p>
+        <p class="text-sm text-gray-500">Order {{ order_code }} · Table {{ order.table.table_number }}</p>
+        <p class="text-sm text-gray-500">Started: {{order.created_at |date:"g:i A"}}</p>
       </div>
       <div>
-        <p class="text-base font-medium text-gray-700">Customer: <span class="font-semibold">Ravi Kumar</span></p>
+        <p class="text-base font-medium text-gray-700"> <span class="font-semibold">{{ order.customer.name }}</span></p>
       </div>
     </div>
 
@@ -41,18 +41,21 @@
     <div class="mb-6">
       <h3 class="text-lg font-semibold text-gray-700 mb-2">Items</h3>
       <ul class="divide-y divide-gray-200">
+          {% for item in order.items.all %}
         <li class="flex justify-between py-2">
-          <span>Masala Dosa × 2</span>
-          <span>₹160</span>
+
+          <span>{{item.menu_item.name}} × {{ item.quantity }} </span>
+          <span>₹ {{ item.menu_item.price}}</span>
         </li>
-        <li class="flex justify-between py-2">
-          <span>Filter Coffee × 1</span>
-          <span>₹40</span>
-        </li>
+
         <li class="flex justify-between py-2 font-semibold text-gray-800">
           <span>Total</span>
-          <span>₹200</span>
+          <span>₹{{ order.total_amount }}</span>
+
+          {% empty %}
+    <li class="flex justify-between py-2 font-semibold text-gray-800">No items in this order.</li>
         </li>
+          {% endfor %}
       </ul>
     </div>
 
@@ -84,7 +87,7 @@
 
     <!-- Other -->
     <label>
-      <input type="radio" name="payment" value="Other" class="peer hidden" />
+      <input type="radio" name="payment" value="OTHER" class="peer hidden" />
       <div class="px-4 py-2 rounded-xl shadow cursor-pointer
                   bg-yellow-500 text-white peer-checked:ring-2 peer-checked:ring-offset-2 peer-checked:ring-yellow-800">
         Other
@@ -95,9 +98,9 @@
 
     <!-- Action Buttons -->
     <div class="flex flex-col sm:flex-row gap-4">
-      <button class="flex-1 px-4 py-3 bg-gray-800 text-white rounded-xl shadow hover:bg-gray-900">
+      <a href="{% url 'orders:print_bill' cafe.slug order.id %}" target="_blank" class=" text-center flex-1 px-4 py-3 bg-gray-800 text-white rounded-xl shadow hover:bg-gray-900">
         🖨️ Print Bill
-      </button>
+      </a>
       <button class="flex-1 px-4 py-3 bg-green-500 text-white rounded-xl shadow hover:bg-green-600">
         📤 Send Bill on WhatsApp
       </button>
@@ -115,3 +118,6 @@
   </div>
 </body>
 </html>
+
+
+

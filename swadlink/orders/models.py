@@ -74,6 +74,12 @@ class Order(models.Model):
         ('served', 'Served'),
     ]
 
+    PAYMENT_CHOICES = [
+        ('UPI', 'UPI'),
+        ('CASH', 'Cash'),
+        ('OTHER', 'Other'),
+    ]
+
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='orders')
     customer = models.ForeignKey(GlobalCustomerDB, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -81,9 +87,11 @@ class Order(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
     table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
     order_code = models.CharField(max_length=100, unique=True, blank=True)
+    payment_mode = models.CharField(max_length=10, choices=PAYMENT_CHOICES, default='CASH')
+    special_request = models.CharField(max_length=200,  null=True, blank=True,) 
 
     def __str__(self):
-        return f"Order #{self.id} - {self.customer.name} at {self.cafe.name}"
+        return f"Order #{self.order_code} - {self.customer.name} at {self.cafe.name}"
 
     def is_active(self):
         return self.status == 'active'

@@ -62,8 +62,63 @@ def owner_or_superuser_required(view_func):
         # ✅ Also allow if user is a superuser
         if request.user.is_superuser:
             return view_func(request, cafe=cafe, owner=request.user, slug=slug, *args, **kwargs)
+        
+        
 
         # ❌ Otherwise forbid access
         return HttpResponseForbidden("You do not have permission to access this dashboard.")
 
+    return _wrapped_view
+
+
+def owner_or_superuser_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, slug, *args, **kwargs):
+        print("User:", request.user)
+        print("Authenticated:", request.user.is_authenticated)
+        print("Superuser:", request.user.is_superuser)
+        print("Slug:", slug)
+        if not request.user.is_authenticated:
+            # preserve ?next= on redirect
+            path = quote(request.get_full_path())
+
+            return redirect(f'/{slug}/login/?next={path}')
+        
+        cafe = get_object_or_404(Cafe, slug=slug)
+        print("Cafe found:", cafe)
+
+        # ✅ Allow if user is an owner of the cafe
+        if request.user in cafe.owners.all():
+            return view_func(request, cafe=cafe, owner=request.user, slug=slug, *args, **kwargs)
+
+        # ✅ Also allow if user is a superuser
+        if request.user.is_superuser:
+            return view_func(request, cafe=cafe, owner=request.user, slug=slug, *args, **kwargs)
+        
+        
+
+        # ❌ Otherwise forbid access
+        return HttpResponseForbidden("You do not have permission to access this dashboard.")
+
+    return _wrapped_view
+
+
+def owner_employee_or_admin_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, slug, *args, **kwargs):
+        if not request.user.is_authenticated:
+            path = quote(request.get_full_path())
+            return redirect(f'/{slug}/login/?next={path}')
+        
+        cafe = get_object_or_404(Cafe, slug=slug)
+
+        is_owner = cafe in request.user.cafes_owned.all()
+        is_employee = cafe in request.user.cafes_employed.all()
+        is_admin = request.user.is_superuser
+
+        if is_owner or is_employee or is_admin:
+            return view_func(request, cafe=cafe, user=request.user, slug=slug, *args, **kwargs)
+
+        return HttpResponseForbidden("You do not have permission to access this page.")
+    
     return _wrapped_view

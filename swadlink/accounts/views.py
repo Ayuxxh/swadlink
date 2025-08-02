@@ -13,18 +13,27 @@ class CafeLoginView(LoginView):
         self.cafe = get_object_or_404(Cafe, slug=kwargs.get('slug'))
 
         if request.user.is_authenticated:
-            if self._user_belongs_to_cafe(request.user, self.cafe):
-                return redirect(f'/{self.cafe.slug}/dashboard/')
-            else:
+            if not self._user_belongs_to_cafe(request.user, self.cafe):
                 messages.error(request, "You are not authorized for this café.")
                 return redirect(f'/{self.cafe.slug}/login/')
 
+            # Redirect based on role
+            if request.user.is_superuser or request.user.role == 'owner':
+                return redirect('dashboard:dashboard', slug=self.cafe.slug)
+            elif request.user.role == 'employee':
+                return redirect('dashboard:employee_dashboard', slug=self.cafe.slug)
 
-                
         return super().dispatch(request, *args, **kwargs)
     
     def form_valid(self, form):
         user = form.get_user()
+
+        print("Logged in user:", user)
+        print("User role:", user.role)
+        print("Cafe:", self.cafe)
+        print("Is superuser?", user.is_superuser)
+        print("Is in cafe.employees?", self.cafe.employees.filter(id=user.id).exists())
+        print("Is in cafe.owners?", self.cafe.owners.filter(id=user.id).exists())
 
         if not self._user_belongs_to_cafe(user, self.cafe):
             messages.error(self.request, "You do not belong to this café.")

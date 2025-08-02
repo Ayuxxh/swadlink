@@ -28,7 +28,7 @@
 
     <!-- Buttons: Visit Public Menu + Download -->
     <div class="flex flex-col md:flex-row justify-between gap-4">
-      <a href="/menu/" target="_blank"
+      <a href="{% url 'menu:public_menu' cafe.slug %}" target="_blank"
          class="w-full md:w-1/2 px-4 py-2 bg-[var(--green-filter)] text-green-900 font-semibold text-center rounded-md hover:bg-green-200">
         Visit Public Menu
       </a>
