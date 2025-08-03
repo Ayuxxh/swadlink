@@ -19,6 +19,9 @@ from .report_builder import build_order_report
 
 from django.utils.timezone import localtime
 
+from django.db.models import Sum, F, DecimalField, ExpressionWrapper
+from decimal import Decimal 
+
 
 
 @owner_or_superuser_required
@@ -27,15 +30,31 @@ def dashboard(request,cafe , owner, slug):
 
     from_date, to_date, trunc, delta = get_timeframe_parts(filter_type)
 
-    orders = Order.objects.filter(cafe=cafe, created_at__range=(from_date, to_date))
+    orders = Order.objects.filter(cafe=cafe, created_at__range=(from_date, to_date)).prefetch_related('items__menu_item')
+
     print("FROM:", from_date)
     print("TO:", to_date)
     print("ORDERS:", orders.count())
 
 
-    total_revenue = sum(order.total_amount for order in orders)
+    orders = orders.annotate(
+        order_total=Sum(
+            ExpressionWrapper(
+                F('items__quantity') * F('items__menu_item__price'),
+                output_field=DecimalField()
+            )
+        )                                                                                                          
+    )
+
+
+    total_revenue = orders.aggregate(total=Sum('order_total'))['total'] or Decimal('0.00')
+    upi_revenue = orders.filter(payment_mode='UPI').aggregate(total=Sum('order_total'))['total'] or Decimal('0.00')
+    cash_revenue = orders.filter(payment_mode='CASH').aggregate(total=Sum('order_total'))['total'] or Decimal('0.00')
     estimated_profit = sum(order.estimated_profit for order in orders)
     avg_order = Order.get_average_order_value(orders)
+
+
+    active_served_count = orders.filter(status__in=['active', 'served']).count()
 
     top_employee = (
         orders.values('created_by__name')
@@ -68,6 +87,8 @@ def dashboard(request,cafe , owner, slug):
         "owner": owner,
         "selected_filter": filter_type,
         "total_revenue": total_revenue,
+        "upi_revenue" : upi_revenue,
+        "cash_revenue" : cash_revenue,
         "total_orders": orders.count(),
         "avg_order": avg_order,
         "estimated_profit": estimated_profit,
@@ -77,6 +98,8 @@ def dashboard(request,cafe , owner, slug):
         "timeframes": ['daily', 'weekly', 'monthly', 'yearly'],
         "sales_over_time": sales_over_time,
          "bestseller_chart": bestseller_chart,
+         "acitve_served_count" : active_served_count,
+
     }
     return render(request,'dashboard/owner/dashboard.html', context)
 
@@ -254,7 +277,7 @@ def employee(request,cafe , user,  slug):
     return render(request,'dashboard/employee/employee_dashboard.html', context)
 
 @owner_employee_or_admin_required
-def mark_order_served(request, order_id, slug,cafe, owner):
+def mark_order_served(request, order_id, slug,cafe, user):
     try:
 
         order = Order.objects.get(id=order_id, cafe=cafe, status='active')
@@ -266,7 +289,7 @@ def mark_order_served(request, order_id, slug,cafe, owner):
 
 
 @owner_employee_or_admin_required
-def kot_data(request,slug, cafe, owner):
+def kot_data(request,slug, cafe, user):
 
     orders = Order.objects.filter(cafe=cafe, status='active').prefetch_related('items__menu_item', 'customer').order_by('-created_at')
     data = {
@@ -354,11 +377,12 @@ def close_order(request, order_id, cafe, user, slug):
 
     if request.method == 'POST':
 
-        print('posting')
+        
         order = get_object_or_404(Order, id=order_id, cafe=cafe)
         payment_method = request.POST.get('payment')
         order.status = 'completed'
-        order.payment_mode = payment_method
+        if payment_method:
+            order.payment_mode = payment_method
         order.save()
 
        

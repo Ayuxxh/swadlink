@@ -14,7 +14,7 @@ class CafeLoginView(LoginView):
 
         if request.user.is_authenticated:
             if not self._user_belongs_to_cafe(request.user, self.cafe):
-                messages.error(request, "You are not authorized for this café.")
+
                 return redirect(f'/{self.cafe.slug}/login/')
 
             # Redirect based on role
