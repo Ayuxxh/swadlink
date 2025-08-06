@@ -22,6 +22,7 @@ from django.utils.timezone import localtime
 from django.db.models import Sum, F, DecimalField, ExpressionWrapper
 from decimal import Decimal 
 
+from orders.utils.whatsapp_kpi import send_bill
 
 
 @owner_or_superuser_required
@@ -378,11 +379,15 @@ def close_order(request, order_id, cafe, user, slug):
     if request.method == 'POST':
 
         
-        order = get_object_or_404(Order, id=order_id, cafe=cafe)
+        order = get_object_or_404(Order.objects.prefetch_related('items'), id=order_id, cafe=cafe)
         payment_method = request.POST.get('payment')
         order.status = 'completed'
         if payment_method:
             order.payment_mode = payment_method
+        if order.customer.phone:
+            
+            send_bill(order)
+
         order.save()
 
        
