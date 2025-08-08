@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import psycopg
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +27,8 @@ SECRET_KEY = 'django-insecure-o!!(gk9^fdfztib#k*5rj!nmf9fu4lts^-w4(fp%5xszbbng0g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
 
 
 # Application definition
@@ -40,6 +43,9 @@ INSTALLED_APPS = [
     'accounts',
     'cafes',
     'dashboard',
+    'customer',
+    'menu',
+    'orders',
 
 ]
 
@@ -51,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'swadlink.urls'
@@ -78,11 +85,18 @@ WSGI_APPLICATION = 'swadlink.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'qrahi_database',
+        'USER': 'qrahi_database_user',
+        'PASSWORD': 'uMBa6gGfyWCUz7CNgfVMlMwaJz78cjRu',
+        'HOST': 'dpg-d2a6nb1r0fns739202n0-a.singapore-postgres.render.com',
+        'PORT': '5432',
+         'OPTIONS': {
+                 'sslmode': 'require',
+            'client_encoding': 'UTF8',
+        },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -108,11 +122,12 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+USE_TZ = True
+
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
-USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -130,3 +145,5 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 USE_DJANGO_JQUERY = True
 
 JQUERY_URL = True
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'

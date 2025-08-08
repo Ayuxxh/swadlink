@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bill - {{ cafe.name }}</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #fff;
+      padding: 20px;
+      color: #000;
+    }
+
+    .receipt {
+      width: 320px;
+      margin: auto;
+      padding: 20px;
+      border: 1px dashed #000;
+    }
+
+    .centered {
+      text-align: center;
+    }
+
+    h2 {
+      margin: 0;
+    }
+
+    .info {
+      margin: 10px 0;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .line {
+      border-top: 1px dashed #000;
+      margin: 10px 0;
+    }
+
+    table {
+      width: 100%;
+      font-size: 13px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 4px 0;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    .total-row td {
+      font-weight: bold;
+      border-top: 1px dashed #000;
+      padding-top: 6px;
+    }
+
+    .footer {
+      margin-top: 15px;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background: black;
+      color: white;
+      border: none;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    @media print {
+      button {
+        display: none;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      .receipt {
+        border: none;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="receipt">
+    <div class="centered">
+      <h2>{{ cafe.name }}</h2>
+      <h5>Powered by Qrave</h5>
+      <div class="info">
+        Taste That Connects<br>
+        Order Code: {{ order.order_code }}<br>
+        Table: {{ order.table.table_number }}<br>
+        {{ order.created_at|date:"d M Y, g:i A" }}
+      </div>
+    </div>
+
+    <div class="line"></div>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="text-align: left" >Item</th>
+          <th class="right">Qty</th>
+          <th class="right">Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in order.items.all %}
+        <tr>
+          <td>{{ item.menu_item.name }}</td>
+          <td class="right">{{ item.quantity }}</td>
+          <td class="right">₹{{ item.menu_item.price }}</td>
+        </tr>
+        {% endfor %}
+        <tr class="total-row">
+          <td colspan="2">Total</td>
+          <td class="right">₹{{ order.total_amount }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="line"></div>
+
+    <div class="footer">
+      Thank you for dining with us!<br>
+      Visit again 
+    </div>
+  </div>
+
+  <button onclick="window.print()">🖨️ Print Bill</button>
+
+  <script>
+    window.print()
+  </script>
+</body>
+</html>

@@ -1,9 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Order Summary - Deva's Cafe</title>
+  <title>Order Summary - {{ cafe.name }}</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
   <style>
@@ -17,7 +18,7 @@
   <!-- Header -->
   <div class="bg-green-800 text-white text-center py-5 px-4 shadow-md">
     <h1 class="text-3xl font-extrabold tracking-wide leading-tight">Order Summary</h1>
-    <p class="text-sm text-green-300 italic">Powered by SwadLink • Deva’s Cafe</p>
+    <p class="text-sm text-green-300 italic">Powered by Qrahi • {{ cafe.name }}</p>
   </div>
 
   <!-- Summary Card -->
@@ -25,84 +26,33 @@
 
     <!-- Customer Info -->
     <div class="space-y-1 text-sm">
-      <p><span class="font-semibold">Name:</span> <span id="custName">—</span></p>
-      <p><span class="font-semibold">Phone:</span> <span id="custPhone">—</span></p>
-      <p><span class="font-semibold">Table:</span> <span id="custTable">—</span></p>
+      <p><span class="font-semibold">Customer:</span> {{ customer }}</p>
+      <!-- Add phone or table if needed -->
     </div>
 
     <!-- Items -->
     <div>
       <h2 class="text-lg font-bold mb-2">Items Ordered</h2>
-      <div id="orderItems" class="space-y-3 text-sm">
-        <!-- JS will insert items here -->
+      <div class="space-y-3 text-sm">
+{% for item in cart %}
+  <div class="flex justify-between items-center">
+    <div><p class="font-medium">{{ item.name }} x {{ item.qty }}</p></div>
+    <div>₹{{ item.subtotal }}</div>
+  </div>
+{% endfor %}
       </div>
     </div>
 
-    <!-- Total -->
-    <div class="flex justify-between text-base font-semibold border-t pt-4">
-      <span>Total:</span>
-      <span id="totalAmount">₹0</span>
+    <!-- Thank You -->
+    <div class="text-center pt-4 text-green-700 font-semibold">
+      ✅ Order successfully created!
     </div>
 
-    <!-- Submit Button -->
-    <button onclick="submitOrder()"
-      class="w-full bg-green-700 hover:bg-green-800 text-white py-3 rounded-lg font-semibold tracking-wide shadow-md">
-      Submit Order to KOT
-    </button>
+    <!-- CTA -->
+    <div class="pt-2 text-center">
+      <a href="{% url 'dashboard:employee_dashboard' slug=cafe.slug %}" class="text-sm text-green-700 underline hover:text-green-900">Back to Dashboard</a>
+    </div>
+
   </div>
-
-  <!-- JS -->
-  <script>
-    // Example placeholders for customer and cart — replace with your actual data source
-    const customerData = JSON.parse(localStorage.getItem("customerData")) || {
-      name: "Ravi Sharma",
-      phone: "9876543210",
-      table: "5",
-    };
-
-    const cart = JSON.parse(localStorage.getItem("cartData")) || {
-      tomatoSoup: { name: "Tomato Soup", price: 120, qty: 2 },
-      manchowSoup: { name: "Manchow Soup", price: 130, qty: 1 },
-      whiteSaucePasta: { name: "White Sauce Pasta", price: 200, qty: 1 },
-    };
-
-    // Render customer details
-    document.getElementById("custName").innerText = customerData.name;
-    document.getElementById("custPhone").innerText = customerData.phone;
-    document.getElementById("custTable").innerText = customerData.table;
-
-    // Render cart items
-    const orderItemsDiv = document.getElementById("orderItems");
-    let total = 0;
-
-    Object.keys(cart).forEach(key => {
-      const item = cart[key];
-      const itemTotal = item.qty * item.price;
-      total += itemTotal;
-
-      const div = document.createElement("div");
-      div.className = "flex justify-between items-center";
-      div.innerHTML = `
-        <div>
-          <p class="font-medium">${item.name} x ${item.qty}</p>
-        </div>
-        <div>₹${itemTotal}</div>
-      `;
-      orderItemsDiv.appendChild(div);
-    });
-
-    document.getElementById("totalAmount").innerText = "₹" + total;
-
-    // Submit Order
-    function submitOrder() {
-      alert("Order sent to KOT!");
-      // Here you'd POST to backend or send via WebSocket to the kitchen.
-      console.log({
-        customer: customerData,
-        items: cart,
-        total: total
-      });
-    }
-  </script>
 </body>
 </html>
