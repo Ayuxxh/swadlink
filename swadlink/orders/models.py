@@ -89,6 +89,9 @@ class Order(models.Model):
     order_code = models.CharField(max_length=100, unique=True, blank=True)
     payment_mode = models.CharField(max_length=10, choices=PAYMENT_CHOICES, default='CASH')
     special_request = models.CharField(max_length=200,  null=True, blank=True,) 
+    total_amount_pre_calculated = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    item_cost_pre_calculated = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    profit = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         return f"Order #{self.order_code} - {self.customer.name} at {self.cafe.name}"

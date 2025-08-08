@@ -112,6 +112,10 @@ def owner_employee_or_admin_required(view_func):
         
         cafe = get_object_or_404(Cafe, slug=slug)
 
+        if not cafe.is_active:
+            return HttpResponseForbidden("This café is temporarily unavailable.")
+
+
         is_owner = cafe in request.user.cafes_owned.all()
         is_employee = cafe in request.user.cafes_employed.all()
         is_admin = request.user.is_superuser

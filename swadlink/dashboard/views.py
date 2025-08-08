@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.contrib import messages
 from  cafes.models import Cafe
 from menu.models import Menu
-from orders.models import Order
+from orders.models import Order, OrderItem
 import csv
 from io import TextIOWrapper
 from utils.decorators import owner_or_superuser_required, owner_employee_or_admin_required
@@ -24,39 +24,45 @@ from decimal import Decimal
 
 from orders.utils.whatsapp_kpi import send_bill
 
-
+from django.db.models.functions import Coalesce
 @owner_or_superuser_required
 def dashboard(request,cafe , owner, slug):
     filter_type = request.GET.get('filter', 'daily')
 
     from_date, to_date, trunc, delta = get_timeframe_parts(filter_type)
-
-    orders = Order.objects.filter(cafe=cafe, created_at__range=(from_date, to_date)).prefetch_related('items__menu_item')
-
-    print("FROM:", from_date)
-    print("TO:", to_date)
-    print("ORDERS:", orders.count())
-
-
-    orders = orders.annotate(
-        order_total=Sum(
-            ExpressionWrapper(
-                F('items__quantity') * F('items__menu_item__price'),
-                output_field=DecimalField()
-            )
-        )                                                                                                          
+    orders = (
+        Order.objects
+        .filter(
+            cafe=cafe,
+            created_at__range=(from_date, to_date)
+        )
+        .select_related('created_by')  # For top employee
+        .prefetch_related('items__menu_item')  # For bestseller, etc.
+        .annotate(order_total=F('total_amount_pre_calculated'))  # Optional: for frontend use
     )
 
 
-    total_revenue = orders.aggregate(total=Sum('order_total'))['total'] or Decimal('0.00')
-    upi_revenue = orders.filter(payment_mode='UPI').aggregate(total=Sum('order_total'))['total'] or Decimal('0.00')
-    cash_revenue = orders.filter(payment_mode='CASH').aggregate(total=Sum('order_total'))['total'] or Decimal('0.00')
-    estimated_profit = sum(order.estimated_profit for order in orders)
+    revenue_data = orders.aggregate(
+        total_revenue = Coalesce(Sum('total_amount_pre_calculated'), Decimal('0.00')),
+        upi_revenue   = Coalesce(Sum('total_amount_pre_calculated', filter=Q(payment_mode='UPI')), Decimal('0.00')),
+        cash_revenue  = Coalesce(Sum('total_amount_pre_calculated', filter=Q(payment_mode='CASH')), Decimal('0.00')),
+        other_revenue  = Coalesce(Sum('total_amount_pre_calculated', filter=Q(payment_mode='OTHER')), Decimal('0.00')),
+    )
+
+    total_revenue = revenue_data['total_revenue']
+    upi_revenue   = revenue_data['upi_revenue']
+    other_revenue   = revenue_data['other_revenue']
+    cash_revenue  = revenue_data['cash_revenue']
+
+    # 4. Profit and average order value
+    estimated_profit = orders.aggregate(
+        profit = Coalesce(Sum('profit'), Decimal('0.00'))
+    )['profit']
+
     avg_order = Order.get_average_order_value(orders)
 
-
-    active_served_count = orders.filter(status__in=['active', 'served']).count()
-
+    # 5. Count active/served orders
+    active_served_count = orders.filter(status__in=['active', 'served', 'other']).count()
     top_employee = (
         orders.values('created_by__name')
         .annotate(order_count=Count('id'))
@@ -64,21 +70,21 @@ def dashboard(request,cafe , owner, slug):
         .first()
     )
     sales_over_time = generate_sales_series(orders, from_date, to_date, trunc, delta)   
-
     bestsellers = (
-        orders.values('items__menu_item__name')
-        .annotate(quantity_sold=Sum('items__quantity'))
+        OrderItem.objects
+        .filter(order__in=orders)
+        .values('menu_item__name')
+        .annotate(quantity_sold=Sum('quantity'))
         .order_by('-quantity_sold')[:5]
     )
 
     bestseller_chart = [
-    {
-        "item": item['items__menu_item__name'],
-        "quantity": item['quantity_sold']
-    }
-    for item in bestsellers
+        {
+            "item": item['menu_item__name'],
+            "quantity": item['quantity_sold']
+        }
+        for item in bestsellers
     ]
-
 
 
     timeframes = ['daily', 'weekly', 'monthly', 'yearly']
@@ -89,6 +95,7 @@ def dashboard(request,cafe , owner, slug):
         "selected_filter": filter_type,
         "total_revenue": total_revenue,
         "upi_revenue" : upi_revenue,
+        "other_revenue" : other_revenue,
         "cash_revenue" : cash_revenue,
         "total_orders": orders.count(),
         "avg_order": avg_order,
@@ -327,7 +334,7 @@ def kot(request,cafe , user,  slug):
 
 
 
-    return render(request,'dashboard/employee/kot.html', context)
+    return render(request,'dashboard/employee/KOT.html', context)
 
 from django.db.models import Q
 
@@ -347,7 +354,7 @@ def employee_live_orders(request, slug, cafe, user):
             'total': round(order.total_amount),
             'order_code' :  str(order.order_code).split('-')[-1],
             'total_amount': order.total_amount,
-            'items': [
+            'items': [ 
                 {'name': i.menu_item.name, 'qty': i.quantity}
                 for i in order.items.all()
             ]
@@ -385,8 +392,18 @@ def close_order(request, order_id, cafe, user, slug):
         if payment_method:
             order.payment_mode = payment_method
         if order.customer.phone:
+            if  cafe.cafe_whatsapp_billing ==  True:
+
             
-            send_bill(order)
+                send_bill(order, cafe)
+        
+        total_amount = order.total_amount
+        real_cost = order.real_cost
+        profit = total_amount - real_cost
+
+        order.total_amount_pre_calculated = total_amount
+        order.item_cost_pre_calculated = real_cost
+        order.profit =  profit
 
         order.save()
 

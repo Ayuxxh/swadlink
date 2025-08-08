@@ -3,7 +3,7 @@
 from decimal import Decimal
 from django.db.models import Sum, Count, F, ExpressionWrapper, DecimalField
 from orders.models import Order
-from cafes.models import Cafe
+from cafes.models import Cafe, MessageLog
 from dashboard.utils import get_timeframe_parts
 import requests
 
@@ -105,7 +105,7 @@ Powered by *Qrahi* – Where every order tells a story."""
 
 
 
-def send_bill(order):
+def send_bill(order, cafe):
     url = "https://api.gupshup.io/wa/api/v1/msg"
 
     headers = {
@@ -117,7 +117,7 @@ def send_bill(order):
 
     message = f' Hi, { order.customer.name }, here is your bill, {order.total_amount}'
 
-    print('hi')
+
 
 #     message = f"""Hi, Owner! 🌙  
 # Here’s your daily report for *{ details['cafe_name'] }* 🧾
@@ -147,4 +147,10 @@ def send_bill(order):
     }
 
     response = requests.post(url, headers=headers, data=data)
+    print(response)
+    if response.status_code == 202:
+        MessageLog.objects.create(
+        cafe=cafe,
+        message_type='BILLING',
+        content=message     )
     print(response.status_code, response.text)
