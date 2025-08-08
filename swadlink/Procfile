@@ -1,1 +1,1 @@
-web: gunicorn swadlink.swadlink.wsgi
+web: gunicorn swadlink.wsgi
