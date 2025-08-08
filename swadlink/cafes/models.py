@@ -31,6 +31,9 @@ class Cafe(models.Model):
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=False, related_name='cafes')
     state = models.ForeignKey(State, on_delete=models.SET_NULL, null=True, blank=False, related_name='cafes')
 
+    is_active = models.BooleanField(default=True)  # Whether café is active or not
+    cafe_whatsapp_billing = models.BooleanField(default=False)  
+
 
     owners = models.ManyToManyField(
         CustomUser,
@@ -51,3 +54,23 @@ class Cafe(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+class MessageLog(models.Model):
+    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='message_logs')
+    sent_at = models.DateTimeField(auto_now_add=True)
+    message_type = models.CharField(max_length=50, choices=[
+        ('KPI_REPORT', 'KPI Report'),
+        ('BILLING', 'Billing'),
+        ('FEEDBACK_REQUEST', 'Feedback Request'),
+        ('OTHER', 'Other'),
+    ])
+    content = models.TextField(blank=True, null=True)  # Optional: Store message content or template name
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['cafe', 'sent_at']),
+        ]
+
+    def __str__(self):
+        return f"{self.cafe.name} - {self.message_type} - {self.sent_at.strftime('%Y-%m-%d %H:%M')}"
