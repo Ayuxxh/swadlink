@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      {% load pwa %}
+    {% progressive_web_app_meta %}  <!-- This injects all required PWA tags -->
   <title>{% block title %}{{ cafe.name }} | Dashboard{% endblock %}</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>

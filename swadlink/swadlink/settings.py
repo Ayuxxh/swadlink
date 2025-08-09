@@ -28,7 +28,7 @@ SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", cast=bool, default=False)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS =  ['swadlink.onrender.com', 'localhost']
 
 
     
@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'customer',
     'menu',
     'orders',
+        'pwa',
 
 ]
 
@@ -161,4 +162,31 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CSRF_TRUSTED_ORIGINS = [
     'https://swadlink.onrender.com'
+]
+
+
+
+# Basic PWA Configuration
+PWA_APP_NAME = 'QRahi Cafe'
+PWA_APP_DESCRIPTION = "Cafe Management PWA"
+PWA_APP_THEME_COLOR = '#4a4a4a'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/alien-cafe/login'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+
+# Icons (replace with your paths)
+PWA_APP_ICONS = [
+    {
+        'src': '/static/icons/icon-160x160.png',
+        'sizes': '160x160',
+        'type': 'image/png'
+    },
+    {
+        'src': '/static/icons/icon-512x512.png',
+        'sizes': '512x512',
+        'type': 'image/png'
+    }
 ]
