@@ -48,14 +48,15 @@
           <span>₹ {{ item.menu_item.price}}</span>
         </li>
 
-        <li class="flex justify-between py-2 font-semibold text-gray-800">
-          <span>Total</span>
-          <span>₹{{ order.total_amount }}</span>
+
 
           {% empty %}
     <li class="flex justify-between py-2 font-semibold text-gray-800">No items in this order.</li>
         </li>
           {% endfor %}
+                  <li class="flex justify-between py-2 font-semibold text-gray-800">
+          <span>Total</span>
+          <span>₹{{ order.total_amount }}</span>
       </ul>
     </div>
 

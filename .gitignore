@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+
+# Django / Local
+db.sqlite3
+media/
+
+# Env & secrets
+.env
+*.env
+.env.*
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Logs
+*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Frontend
+node_modules/
+build/
+dist/
