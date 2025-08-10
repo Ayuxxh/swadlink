@@ -82,7 +82,11 @@
           <ul class="mt-2 space-y-1 text-sm">
             ${order.items.map(i => `<li>• ${i.name} x${i.qty}</li>`).join('')}
           </ul>
-          <p class="text-xs text-gray-500">${order.special_request}</p>
+          
+         ${order.special_request && order.special_request.toLowerCase() !== "null" && order.special_request.trim() !== "" 
+    ? `<p class="text-xs text-gray-500">${order.special_request}</p>` 
+    : ""
+}
           <p class="mt-2 font-semibold text-green-700">Total: ₹${order.total}</p>
         `;
         orderList.appendChild(div);

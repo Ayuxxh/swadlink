@@ -28,7 +28,7 @@ SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", cast=bool, default=False)
 
-ALLOWED_HOSTS =  ['swadlink.onrender.com', 'localhost']
+ALLOWED_HOSTS =  ['swadlink.onrender.com', 'localhost', 'qrahi.com', "www.qrahi.com"]
 
 
     
@@ -160,16 +160,13 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://swadlink.onrender.com'
-]
-
+# CSRF_TRUSTED_ORIGINS = ['swadlink.onrender.com', 'http://localhost:8000/admin/', 'qrahi.com', "www.qrahi.com"]
 
 
 # Basic PWA Configuration
 PWA_APP_NAME = 'QRahi Cafe'
 PWA_APP_DESCRIPTION = "Cafe Management PWA"
-PWA_APP_THEME_COLOR = '#4a4a4a'
+PWA_APP_THEME_COLOR = "#286100"
 PWA_APP_BACKGROUND_COLOR = '#ffffff'
 PWA_APP_DISPLAY = 'standalone'
 PWA_APP_SCOPE = '/'
