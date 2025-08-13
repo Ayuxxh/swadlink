@@ -18,6 +18,7 @@ from django.conf import settings
 
 def generate_manifest( request, slug ):
     cafe = get_object_or_404(Cafe,slug=slug)
+
     manifest = {
         "name": f"{cafe.name} POS",  # e.g., "paris-louvre" → "Paris Louvre PWA"
         "short_name": cafe.name[:12],  # Truncated slug
@@ -27,4 +28,8 @@ def generate_manifest( request, slug ):
         "display": settings.PWA_APP_DISPLAY,
         "icons": settings.PWA_APP_ICONS,  # <-- Reuse global icons
     }
+
+    manifest['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    manifest['Pragma'] = 'no-cache'
+    manifest['Expires'] = '0'
     return JsonResponse(manifest, content_type='application/manifest+json')
