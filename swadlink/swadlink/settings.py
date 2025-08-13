@@ -166,7 +166,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Basic PWA Configuration
 PWA_APP_NAME = 'QRahi Cafe'
 PWA_APP_DESCRIPTION = "Cafe Management PWA"
-PWA_APP_THEME_COLOR = "#286100"
+PWA_APP_THEME_COLOR = "#2e7b55"
 PWA_APP_BACKGROUND_COLOR = '#ffffff'
 PWA_APP_DISPLAY = 'standalone'
 PWA_APP_SCOPE = '/'

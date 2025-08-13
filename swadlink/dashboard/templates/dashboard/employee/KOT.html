@@ -2,14 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>{{ cafe.name }} | KOT</title>
+        {% load pwa %}
+    {% progressive_web_app_meta %}  <!-- This injects all required PWA tags -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .kot-scroll-area {
       max-height: calc(100vh - 140px);
       overflow-y: auto;
     }
+    html {
+    touch-action: manipulation;
+}
+
+body {
+    touch-action: pan-y;
+}
   </style>
 </head>
 <body class="bg-gray-100 font-sans relative">
@@ -153,6 +162,51 @@
     animation: slideInDown 0.4s ease-out forwards;
   }
 </style>
+
+  <style>
+  html {
+    touch-action: manipulation;
+}
+
+body {
+    touch-action: pan-y;
+}
+</style>
+  <script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded'); // First debug check
+    
+    // Verify café slug exists
+    const cafeSlug = "{{ cafe.slug }}";
+    if (!cafeSlug) {
+        console.error('Café slug is missing!');
+        return;
+    }
+    console.log('Café slug:', cafeSlug);
+
+    // Remove any existing manifest
+    const oldManifests = document.querySelectorAll('link[rel="manifest"]');
+    oldManifests.forEach(manifest => manifest.remove());
+
+    // Create new manifest link
+    const newManifest = document.createElement('link');
+    newManifest.rel = 'manifest';
+    newManifest.href = `/manifest-${cafeSlug}.json?t=${Date.now()}`;
+    document.head.appendChild(newManifest);
+    
+    console.log('New manifest set:', newManifest.href);
+    
+    // Force service worker update
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+            regs.forEach(reg => {
+                console.log('Updating service worker');
+                reg.update();
+            });
+        });
+    }
+});
+</script>
 
 
 </body>

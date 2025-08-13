@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Close Order - Qrahi</title>
   <script src="https://cdn.tailwindcss.com"></script>
+        {% load pwa %}
+    {% progressive_web_app_meta %}  <!-- This injects all required PWA tags -->
 </head>
 <body class="bg-gray-100 font-sans p-4">
     <!-- Navbar -->
@@ -117,6 +119,17 @@
 </div>
     
   </div>
+
+  <style>
+  html {
+    touch-action: manipulation;
+}
+
+body {
+    touch-action: pan-y;
+}
+</style>
+
 </body>
 </html>
 

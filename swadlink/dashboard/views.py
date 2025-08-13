@@ -276,8 +276,7 @@ def employee(request,cafe , user,  slug):
     orders = Order.objects.filter(
         cafe=cafe,
         status__in=['active', 'served']
-    ).prefetch_related('items__menu_item', 'table')  # optional optimization
-
+    ).prefetch_related('items__menu_item', 'table')  
     context  = {
         "cafe": cafe,
         "orders" : orders,
