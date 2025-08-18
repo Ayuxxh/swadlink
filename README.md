@@ -1,6 +1,6 @@
-# 🧾 SwadLink
+# 🧾 Qrahi
 
-**SwadLink** is a lightweight, QR-powered digital menu and order management system designed for cafés and restaurants in India. It simplifies daily operations with features like real-time KOT, table tracking, WhatsApp billing, and a mobile-friendly owner dashboard.
+**Qrahi** is a lightweight, QR-powered digital menu and order management system designed for cafés and restaurants in India. It simplifies daily operations with features like real-time KOT, table tracking, WhatsApp billing, and a mobile-friendly owner dashboard.
 
 ---
 
@@ -75,9 +75,12 @@ This project is open-source and available under the [MIT License](LICENSE).
 Have ideas or improvements? Feel free to fork, raise issues, or submit pull requests!
 
 ---
-
+## Live Demo : [@qrahi](www.qrahi.com/alien-cafe/login)
+**Demo Username:** "demouser"  
+**Password:** "demouser@aliencafe"
+---
 ## 📬 Contact
 
 **Developer:** Ayush Jadhav  
-**Email:** your.email@example.com  
-**Instagram:** [@swadlink](https://instagram.com/swadlink)
+**Email:** ayush.jadhav@qrahi.com
+**Instagram:** [@qrahi](https://instagram.com/get.qrahi)
