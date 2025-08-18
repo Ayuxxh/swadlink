@@ -3,15 +3,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Order Summary - {{ cafe.name }}</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <style>
     body {
       font-family: 'Poppins', sans-serif;
     }
   </style>
+        {% load pwa %}
+    {% progressive_web_app_meta %}  <!-- This injects all required PWA tags -->
 </head>
 <body class="bg-gradient-to-br from-green-100 to-green-200 text-gray-800 min-h-screen pb-24">
 
@@ -54,5 +57,15 @@
     </div>
 
   </div>
+    <style>
+  html {
+    touch-action: manipulation;
+}
+
+body {
+    touch-action: pan-y;
+}
+</style>
+
 </body>
 </html>

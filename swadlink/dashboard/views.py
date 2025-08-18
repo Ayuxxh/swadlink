@@ -276,8 +276,7 @@ def employee(request,cafe , user,  slug):
     orders = Order.objects.filter(
         cafe=cafe,
         status__in=['active', 'served']
-    ).prefetch_related('items__menu_item', 'table')  # optional optimization
-
+    ).prefetch_related('items__menu_item', 'table')  
     context  = {
         "cafe": cafe,
         "orders" : orders,
@@ -308,6 +307,7 @@ def kot_data(request,slug, cafe, user):
                 "created_at": o.created_at.strftime('%Y-%m-%d %H:%M'),
                 "items": [{"name": i.menu_item.name, "qty": i.quantity} for i in o.items.all()],
                 "customer_name": o.customer.name,
+                "special_request": o.special_request.strip() if o.special_request and o.special_request.strip().lower() != "null" else None,
                 "total": float(o.total_amount)
             } for o in orders
         ]

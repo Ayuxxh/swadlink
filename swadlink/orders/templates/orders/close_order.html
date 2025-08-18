@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Close Order - Qrahi</title>
   <script src="https://cdn.tailwindcss.com"></script>
+        {% load pwa %}
+    {% progressive_web_app_meta %}  <!-- This injects all required PWA tags -->
 </head>
 <body class="bg-gray-100 font-sans p-4">
     <!-- Navbar -->
@@ -35,7 +37,7 @@
     </div>
 
 
-    
+
 
     <!-- Ordered Items -->
     <div class="mb-6">
@@ -48,14 +50,15 @@
           <span>₹ {{ item.menu_item.price}}</span>
         </li>
 
-        <li class="flex justify-between py-2 font-semibold text-gray-800">
-          <span>Total</span>
-          <span>₹{{ order.total_amount }}</span>
+
 
           {% empty %}
     <li class="flex justify-between py-2 font-semibold text-gray-800">No items in this order.</li>
         </li>
           {% endfor %}
+                  <li class="flex justify-between py-2 font-semibold text-gray-800">
+          <span>Total</span>
+          <span>₹{{ order.total_amount }}</span>
       </ul>
     </div>
 
@@ -78,7 +81,7 @@
 
     <!-- Cash -->
     <label>
-      <input type="radio" name="payment" value="Cash" class="peer hidden" />
+      <input type="radio" name="payment" value="CASH" class="peer hidden" />
       <div class="px-4 py-2 rounded-xl shadow cursor-pointer
                   bg-green-600 text-white peer-checked:ring-2 peer-checked:ring-offset-2 peer-checked:ring-green-800">
         Cash
@@ -116,6 +119,17 @@
 </div>
     
   </div>
+
+  <style>
+  html {
+    touch-action: manipulation;
+}
+
+body {
+    touch-action: pan-y;
+}
+</style>
+
 </body>
 </html>
 

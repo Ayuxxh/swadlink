@@ -2,14 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>{{ cafe.name }} | Employee Dashboard</title>
+        {% load pwa %}
+ <!-- This injects all required PWA tags -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
       --green-main: #2e7b55;
       --green-light: #e6f4ec;
     }
+    html {
+    touch-action: manipulation;
+}
+
+body {
+    touch-action: pan-y;
+}
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
@@ -87,7 +96,7 @@ async function fetchOrders() {
       </div>
 
       <div class="grid grid-cols-3 gap-2 mt-4 text-center text-xs font-semibold">
-        <a href="/orders/create/update-items/${cafeSlug}/?order_id=${order.id}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg shadow transition">Update</a>
+        <a href="#" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg shadow transition">Update</a>
         <a href="#" onclick="closeOrder(${order.id}, this)"  class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg shadow transition" >Close</a>
         <button onclick="cancelOrder(${order.id})"
           class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg shadow transition">
@@ -135,7 +144,41 @@ async function cancelOrder(orderId) {
 }
 
 </script>
+  <script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded'); // First debug check
+    
+    // Verify café slug exists
+    const cafeSlug = "{{ cafe.slug }}";
+    if (!cafeSlug) {
+        console.error('Café slug is missing!');
+        return;
+    }
+    console.log('Café slug:', cafeSlug);
 
+    // Remove any existing manifest
+    const oldManifests = document.querySelectorAll('link[rel="manifest"]');
+    oldManifests.forEach(manifest => manifest.remove());
+
+    // Create new manifest link
+    const newManifest = document.createElement('link');
+    newManifest.rel = 'manifest';
+    newManifest.href = `/manifest-${cafeSlug}.json?t=${Date.now()}`;
+    document.head.appendChild(newManifest);
+    
+    console.log('New manifest set:', newManifest.href);
+    
+    // Force service worker update
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+            regs.forEach(reg => {
+                console.log('Updating service worker');
+                reg.update();
+            });
+        });
+    }
+});
+</script>
 
 
 

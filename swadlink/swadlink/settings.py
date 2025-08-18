@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-import psycopg
+import psycopg, os
+from decouple import config
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,15 +23,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-o!!(gk9^fdfztib#k*5rj!nmf9fu4lts^-w4(fp%5xszbbng0g'
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config("DEBUG", cast=bool, default=False)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS =  ['swadlink.onrender.com', 'localhost', 'qrahi.com', "www.qrahi.com"]
 
 
-
+    
 # Application definition
 
 INSTALLED_APPS = [
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     'customer',
     'menu',
     'orders',
+        'pwa',
 
 ]
 
@@ -86,10 +88,10 @@ WSGI_APPLICATION = 'swadlink.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'qrahi_database',
-        'USER': 'qrahi_database_user',
-        'PASSWORD': 'uMBa6gGfyWCUz7CNgfVMlMwaJz78cjRu',
-        'HOST': 'dpg-d2a6nb1r0fns739202n0-a.singapore-postgres.render.com',
+        'NAME': config("DB_NAME"),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
         'PORT': '5432',
          'OPTIONS': {
                  'sslmode': 'require',
@@ -147,3 +149,41 @@ USE_DJANGO_JQUERY = True
 JQUERY_URL = True
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# CSRF_TRUSTED_ORIGINS = ['swadlink.onrender.com', 'http://localhost:8000/admin/', 'qrahi.com', "www.qrahi.com"]
+
+
+# Basic PWA Configuration
+PWA_APP_NAME = 'QRahi Cafe'
+PWA_APP_DESCRIPTION = "Cafe Management PWA"
+PWA_APP_THEME_COLOR = "#2e7b55"
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/alien-cafe/login'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+
+# Icons (replace with your paths)
+PWA_APP_ICONS = [
+    {
+        'src': '/static/icons/icon-160x160.png',
+        'sizes': '160x160',
+        'type': 'image/png'
+    },
+    {
+        'src': '/static/icons/icon-512x512.png',
+        'sizes': '512x512',
+        'type': 'image/png'
+    }
+]

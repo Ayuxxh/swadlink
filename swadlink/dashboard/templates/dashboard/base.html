@@ -2,9 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      {% load pwa %}
+  <!-- This injects all required PWA tags -->
   <title>{% block title %}{{ cafe.name }} | Dashboard{% endblock %}</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Override manifest link with café-specific URL
+    const link = document.createElement('link');
+    link.rel = 'manifest';
+    link.href = `/manifest-twilight.json`;
+    document.head.appendChild(link);
+</script>
   <style>
     :root {
       --green-main: #2e7b55;
@@ -13,18 +22,21 @@
       --gray-border: #4b4b4b33;
       --card-shadow: rgba(0, 0, 0, 0.1);
     }
+    html {
+    touch-action: manipulation;
+}
+
+body {
+    touch-action: pan-y;
+}
   </style>
 </head>
 <body class="bg-[var(--green-light)] min-h-screen text-black font-sans">
   <!-- Header -->
-<!DOCTYPE html>
-<html lang="en" class="h-full">
-<head>
-  <meta charset="UTF-8">
-  <title>Qrahi Dashboard</title>
+
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <script src="https://cdn.tailwindcss.com"></script>
-</head>
+
 <body class="flex flex-col h-screen bg-[var(--green-light)] text-black font-sans">
 
   <!-- Top Navbar -->
@@ -104,8 +116,46 @@
   <main>
     {% block content %}{% endblock %}
   </main>
+  <script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded'); // First debug check
+    
+    // Verify café slug exists
+    const cafeSlug = "{{ cafe.slug }}";
+    if (!cafeSlug) {
+        console.error('Café slug is missing!');
+        return;
+    }
+    console.log('Café slug:', cafeSlug);
+
+    // Remove any existing manifest
+    const oldManifests = document.querySelectorAll('link[rel="manifest"]');
+    oldManifests.forEach(manifest => manifest.remove());
+
+    // Create new manifest link
+    const newManifest = document.createElement('link');
+    newManifest.rel = 'manifest';
+    newManifest.href = `/manifest-${cafeSlug}.json?t=${Date.now()}`;
+    document.head.appendChild(newManifest);
+    
+    console.log('New manifest set:', newManifest.href);
+    
+    // Force service worker update
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+            regs.forEach(reg => {
+                console.log('Updating service worker');
+                reg.update();
+            });
+        });
+    }
+});
+</script>
 </body>
 </html>
+
+
+
 
 
 <script>

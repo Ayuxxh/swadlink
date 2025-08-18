@@ -13,12 +13,12 @@ def build_order_report(cafe, from_date, to_date):
             for item in order.items.all()
         )
         report_data.append({
-            "order_id": order.id,
+            "order_id": order.order_code,
             "customer": order.customer.name,
             "table": order.table.table_number if order.table else "—",
             "status": order.status.title(),
-            "created": order.created_at.strftime("%d %b %Y %I:%M %p"),
-            "amount": float(order.total_amount),
+            "created": order.created_at,
+            "amount": float(order.total_amount_pre_calculated),
             "items": item_summary
         })
 

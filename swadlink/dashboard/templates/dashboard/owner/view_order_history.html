@@ -13,8 +13,9 @@
     <table class="min-w-full text-sm text-left">
       <thead class="bg-gray-100 text-gray-700">
         <tr>
-          <th class="px-3 py-2 border border-[var(--gray-border)]">Order No.</th>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">Order ID.</th>
           <th class="px-3 py-2 border border-[var(--gray-border)]">Items</th>
+          <th class="px-3 py-2 border border-[var(--gray-border)]">Customer</th>
           <th class="px-3 py-2 border border-[var(--gray-border)]">Table</th>
           <th class="px-3 py-2 border border-[var(--gray-border)]">Value</th>
           <th class="px-3 py-2 border border-[var(--gray-border)]">Status</th>
@@ -26,12 +27,13 @@
 
         {% for order in orders %}
         <tr class="hover:bg-gray-50">
-          <td class="px-3 py-2 border border-[var(--gray-border)]">Order #{{ order.id }}</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">{{ order.order_code }}</td>
           <td class="px-3 py-2 border border-[var(--gray-border)]">
             {% for item in order.items.all %}
               {{ item.menu_item.name }} x{{ item.quantity }}{% if not forloop.last %}, {% endif %}
             {% endfor %}
           </td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">{{ order.customer.name }}</td>
           <td class="px-3 py-2 border border-[var(--gray-border)]">
             {% if order.table %}
               {{ order.table.table_number }}
@@ -39,7 +41,7 @@
               N/A
             {% endif %}
           </td>
-          <td class="px-3 py-2 border border-[var(--gray-border)]">₹{{ order.total_amount }}</td>
+          <td class="px-3 py-2 border border-[var(--gray-border)]">₹{{ order.total_amount_pre_calculated }}</td>
           <td class="px-3 py-2 border border-[var(--gray-border)]">
             <span class="inline-block px-2 py-1 text-xs rounded-full 
               {% if order.status == 'completed' %}bg-green-100 text-green-800
@@ -50,7 +52,7 @@
             </span>
           </td>
           <td class="px-3 py-2 border border-[var(--gray-border)]">
-            {{ order.created_at|date:"d/m/Y H:i" }}
+            {{ order.created_at}}
           </td>
         </tr>
         {% empty %}
