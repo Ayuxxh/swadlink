@@ -74,8 +74,16 @@ This project is open-source and available under the [MIT License](LICENSE).
 
 Have ideas or improvements? Feel free to fork, raise issues, or submit pull requests!
 
+## Screenshots
+<img width="1440" height="784" alt="image" src="https://github.com/user-attachments/assets/ce4a8783-c1d5-4c89-8dc9-cddfea239370" />
+<img width="1440" height="777" alt="image" src="https://github.com/user-attachments/assets/de1139d5-fe3f-4aea-9860-bc513faf0083" />
+<img width="313" height="687" alt="image" src="https://github.com/user-attachments/assets/69bd0ab6-538e-4de3-8f5c-fb6982d1dd9a" />
+
+
+
 ---
 ## Live Demo : [@qrahi](https://www.qrahi.com/alien-cafe/login)
+
 **Demo Username:** "demouser"  
 **Password:** "demouser@aliencafe"
 ---
