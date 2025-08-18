@@ -75,7 +75,7 @@ This project is open-source and available under the [MIT License](LICENSE).
 Have ideas or improvements? Feel free to fork, raise issues, or submit pull requests!
 
 ---
-## Live Demo : [@qrahi](www.qrahi.com/alien-cafe/login)
+## Live Demo : [@qrahi](https://www.qrahi.com/alien-cafe/login)
 **Demo Username:** "demouser"  
 **Password:** "demouser@aliencafe"
 ---
