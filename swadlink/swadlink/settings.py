@@ -89,10 +89,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
-        'USER': 'postgres',
+        'USER': 'postgres.iplmcpsoarymjbsnauyv',
         'PASSWORD': 'Tanishka@ayus1',
-        'HOST': 'db.iplmcpsoarymjbsnauyv.supabase.co',
-        'PORT': '5432',
+        'HOST': 'aws-1-ap-northeast-2.pooler.supabase.com',
+        'PORT': '6543',
+        'CONN_MAX_AGE': 60,  # keeps connection alive
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
     }
 }
 
