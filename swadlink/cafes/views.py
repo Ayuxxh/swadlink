@@ -33,3 +33,13 @@ def generate_manifest( request, slug ):
     manifest['Pragma'] = 'no-cache'
     manifest['Expires'] = '0'
     return JsonResponse(manifest, content_type='application/manifest+json')
+
+
+
+from django.http import JsonResponse
+from django.db import connection
+
+def keep_alive(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT 1;")
+    return JsonResponse({"status": "ok"})

@@ -1,5 +1,6 @@
 from django.urls import path, include
 from . import views
+from .views import keep_alive   
 
 urlpatterns = [
     path('<slug:slug>/', include('accounts.urls')),
@@ -8,4 +9,5 @@ urlpatterns = [
     path('<slug:slug>/menu', include('menu.urls', namespace='menu')),
     path('', views.landing),
     path('manifest-<slug:slug>.json', views.generate_manifest, name='cafe_manifest'),
+    path("ping-db/", keep_alive),
 ]
