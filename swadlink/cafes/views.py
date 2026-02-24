@@ -43,3 +43,6 @@ def keep_alive(request):
     with connection.cursor() as cursor:
         cursor.execute("SELECT 1;")
     return JsonResponse({"status": "ok"})
+
+def keep_alive_render(request):
+    return JsonResponse({"status": "ok"})
